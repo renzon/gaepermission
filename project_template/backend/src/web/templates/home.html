@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <title>Zenwarch</title>
+    <script type="application/javascript"
+            src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+    <script type="application/javascript">
+        var myApp = angular.module('myApp', [], function ($interpolateProvider) {
+            $interpolateProvider.startSymbol('{_');
+            $interpolateProvider.endSymbol('_}');
+        });
+
+        function Controller($scope, $http) {
+            $scope.result = ''
+            $scope.ajax = function () {
+                $http.get('{{ ajax_path}}').success(function (data) {
+                    $scope.result = data;
+                });
+            }
+        }
+    </script>
+</head>
+{% macro csrf_input() %}
+    <input type="hidden" value="{{ _csrf_code }}" name="_csrf_code"/>
+{% endmacro %}
+<body>
+{% block body %}
+    <div ng-app="myApp" ng-controller="Controller">
+        <button ng-click="ajax()">Ajax Call</button>
+        <br/>
+        Ajax Resulg: {_ result _}
+    </div>
+    <h1>Secure Form</h1>
+    <form action="{{ form_url }}">
+        {{ csrf_input() }}
+        Type your name <input type="text" name="name"/>
+        <button type="submit">Send</button>
+    </form>
+    <h1>Unsecure Form</h1>
+    <form action="{{ form_url }}">
+        Type your name <input type="text" name="name"/>
+        <button type="submit">Send</button>
+    </form>
+{% endblock %}
+</body>
+</html>
