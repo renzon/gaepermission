@@ -2,7 +2,8 @@
 from __future__ import absolute_import, unicode_literals
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
-from gaepermission.commands import FakeCommand
+from gaepermission import commands
+from gaepermission.commands import FakeCommand, GoogleLogin
 
 USER_COOKIE_NAME = 'userck'
 
@@ -23,5 +24,15 @@ def logged_user(request):
     if dct is None:
         return FakeCommand()
     return NodeSearch(dct['id'])
+
+
+def login_google(google_user, response):
+    '''
+    Googe user must be the user returnet from get_current_user from users module provided by App Engine
+    Returns a command that log user in based on her google account credentials.
+    The logged user (MainUser) is provides on result or None if the user is not logged with her Google Account
+    '''
+
+    return commands.GoogleLogin(google_user, response, USER_COOKIE_NAME)
 
 

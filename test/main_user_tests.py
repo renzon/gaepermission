@@ -14,7 +14,7 @@ class LoggedUserTests(GAETestCase):
         self.assertIsNone(result)
 
     @patch('gaepermission.facade.cookie_facade')
-    def test_no_logged_user(self, cookie_facade):
+    def test_logged_user(self, cookie_facade):
         user = MainUser()
         user.put()
         cookie_facade.retrive_cookie_data = Mock(return_value={'id': user.key.id()})
