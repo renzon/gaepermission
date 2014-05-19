@@ -45,6 +45,7 @@ class GoogleLogin(Command):
         if self._save_google_user_future:
             google_user_key = self._save_google_user_future.get_result()
             main_user_key = self._save_main_user.get_result()
+            facade.write_cookie(self.response, self.user_cookie, {'id': self.result.key.id()}).execute()
             return ExternalToMainUser(origin=google_user_key, destination=main_user_key)
         if self.result:
-            facade.write_cookie(self.response, self.user_cookie, {'id': self.result.key.id()})
+            facade.write_cookie(self.response, self.user_cookie, {'id': self.result.key.id()}).execute()
