@@ -20,7 +20,7 @@ def logged_user(request):
     Returns a command that retrieves the current logged user based on secure cookie
     If there is no logged user, the result from command is None
     '''
-    dct = cookie_facade.retrive_cookie_data(request, USER_COOKIE_NAME)
+    dct = cookie_facade.retrive_cookie_data(request, USER_COOKIE_NAME).execute().result
     if dct is None:
         return FakeCommand()
     return NodeSearch(dct['id'])

@@ -5,10 +5,23 @@
     <title>GAE Permission</title>
 
 </head>
-
+{% macro csrf_input() %}
+    <input type="hidden" value="{{ _csrf_code }}" name="_csrf_code"/>
+{% endmacro %}
 <body>
-<header></header>
-{% block body %}{% endblock %}
 
+{% block body %}{% endblock %}
+<hr />
+<footer><b>Logged User</b>:
+    {% if _logged_user %}
+        {{ _logged_user.name }} -
+        <form action="{{ _logout_path }}" method="post" style="display: inline">
+            {{ csrf_input() }}
+            <button type="submit">Logout</button>
+        </form>
+    {% else %}
+        No user logged
+    {% endif %}
+</footer>
 </body>
 </html>
