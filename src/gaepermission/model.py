@@ -7,6 +7,7 @@ from gaegraph.model import Node, Arc
 class MainUser(Node):
     name = ndb.StringProperty()
     email = ndb.StringProperty()
+    groups = ndb.StringProperty(repeated=True)
 
 
 # Users from external providers
@@ -21,5 +22,7 @@ class GoogleUser(Node):
     @classmethod
     def query_by_google_id(cls, google_id):
         return cls.query(cls.google_id == google_id)
+
+
 
 
