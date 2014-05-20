@@ -10,7 +10,7 @@ def _helper(_write_tmpl, fcn):
     dct = {'groups': get_groups(fcn),
            'path': router.to_path(fcn),
            'sys_owner': users.is_current_user_admin()}
-    _write_tmpl('permission.html', dct)
+    _write_tmpl('groups.html', dct)
 
 
 @no_csrf
