@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div>
+        <h2>GAE Permission</h2>=
+        <p>
+            You have access because the group(s) "{{ groups if groups else 'System Owner' }}" can access path {{ path }}
+            and </p>
+
+        {% if sys_owner %}
+            <p>
+                You are the system's owner
+            </p>
+        {% endif %}
+
+        {% if _logged_user %}
+            <p>
+                Your groups are {{ _logged_user.groups }}
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}

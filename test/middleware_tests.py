@@ -14,7 +14,7 @@ class LoggedUserTests(GAETestCase):
         cmd_mock.result = None
         facade.logged_user = Mock(return_value=cmd_mock)
         dependency = {}
-        middleware.LoggedUser(Mock(), dependency, Mock()).set_up()
+        middleware.LoggedUserMiddleware(Mock(), dependency, Mock()).set_up()
         self.assertEqual({'_login_path': '/login',
                           '_logout_path': '/logout',
                           '_logged_user': None}, dependency)
@@ -28,7 +28,7 @@ class LoggedUserTests(GAETestCase):
         cmd_mock.result = user
         facade.logged_user = Mock(return_value=cmd_mock)
         dependency = {}
-        middleware.LoggedUser(Mock(), dependency, Mock()).set_up()
+        middleware.LoggedUserMiddleware(Mock(), dependency, Mock()).set_up()
         self.assertEqual({'_login_path': '/login',
                           '_logout_path': '/logout',
                           '_logged_user': user}, dependency)

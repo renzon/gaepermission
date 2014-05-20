@@ -2,6 +2,13 @@
 {% block body %}
     <div>
     <h2>GAE Permission Features</h2>
-        <a href="{{ login_path }}">Login Options</a>
+        <a href="{{ login_path }}">Login Options</a><br />
+        <a href="{{ sys_owner_path }}">System owner Only</a><br />
+        <a href="{{ no_login_path }}">Login not Required</a><br />
+        <a href="{{ no_permission_path }}">Permission not Required</a><br />
+        <a href="{{ manager_path }}">Manager Only</a><br />
+        <a href="{{ adm_path }}">Admin Only</a><br />
+        <a href="{{ adm_or_manager_path }}">Admin or Manager</a>
+
     </div>
 {% endblock %}
