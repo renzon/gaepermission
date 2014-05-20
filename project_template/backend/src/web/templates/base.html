@@ -3,7 +3,7 @@
 <head>
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
     <title>GAE Permission</title>
-
+    {% block head %}{% endblock %}
 </head>
 {% macro csrf_input() %}
     <input type="hidden" value="{{ _csrf_code }}" name="_csrf_code"/>

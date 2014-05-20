@@ -2,10 +2,18 @@
 from __future__ import absolute_import, unicode_literals
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
-from gaepermission import commands
+from gaepermission import commands, inspector
 from gaepermission.commands import FakeCommand, GoogleLogin
+from tekton import router
 
 USER_COOKIE_NAME = 'userck'
+
+
+def web_path_security_info():
+    '''
+    Returns a generator that returns all paths from the application if information about groups and csrf security
+    '''
+    return inspector.web_paths_security_info(router.package_base)
 
 
 def logout(response):

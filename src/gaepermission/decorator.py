@@ -46,9 +46,13 @@ def permission_not_required(fcn):
     return fcn
 
 
+def get_groups_by_path(path):
+    return _security_permission_group_map.get(path)
+
+
 def get_groups(fcn):
     path = router.to_path(fcn)
-    return _security_permission_group_map.get(path)
+    return get_groups_by_path(path)
 
 
 def has_permission(user, fcn):
