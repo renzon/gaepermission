@@ -9,6 +9,11 @@ class MainUser(Node):
     email = ndb.StringProperty()
     groups = ndb.StringProperty(repeated=True)
 
+    @classmethod
+    def query_email_starts_with(cls, prefix=''):
+        last_str_with_prefix = prefix + unichr(0x110000-1)
+        return cls.query(cls.email >= prefix, cls.email < last_str_with_prefix).order(cls.email)
+
 
 # Users from external providers
 
