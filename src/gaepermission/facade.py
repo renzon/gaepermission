@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import commands, inspector
 from gaepermission.commands import FakeCommand, GoogleLogin
+from gaepermission.model import MainUser
 from tekton import router
 
 USER_COOKIE_NAME = 'userck'
@@ -44,3 +46,13 @@ def login_google(google_user, response):
     return commands.GoogleLogin(google_user, response, USER_COOKIE_NAME)
 
 
+def find_users_by_email_starting_with(email_prefix=None, cursor=None, page_size=30):
+    '''
+    Returns a command that retrieves users by its email_prefix, ordered by email.
+    It returns a max number of users defined by page_size arg. Next result can be retrieved using cursor, in
+    a next call. It is provided in cursor attribute from command.
+    '''
+    email_prefix = email_prefix or ''
+
+    return ModelSearchCommand(MainUser.query_email_starts_with(email_prefix),
+                              page_size, cursor, cache_begin=None)
