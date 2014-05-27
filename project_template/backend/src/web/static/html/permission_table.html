@@ -1,0 +1,26 @@
+<div>
+    <h3>Results for emails starting with "{{ searchPrefix }}"</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Email</th>
+            <th>Name</th>
+        </tr>
+        </thead>
+        <tr ng-repeat="u in users" ng-hide="showTable">
+            <td>{{ u.id }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.name }}</td>
+        </tr>
+    </table>
+    <button ng-show="moreResultsFlag && !searchingNextPage"
+            ng-click="searchNextPage(nextPage,searchPrefix)">Next results for "{{ searchPrefix }}" &raquo;</button>
+    <span ng-show="!moreResultsFlag && users.length>0">No more results for "{{ searchPrefix }}" </span>
+    <div ng-show="showTable || searchingNextPage">
+        <img src="/static/img/ajax.gif"/>
+    </div>
+    <div ng-show="users.length==0">
+        No results for emails starting with "{{ searchPrefix }}"
+    </div>
+</div>
