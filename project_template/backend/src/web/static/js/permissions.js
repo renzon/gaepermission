@@ -33,6 +33,37 @@ app.directive('permform', function () {
     };
 });
 
+app.directive('checkList', function () {
+    return {
+        scope: {
+            list: '=checkList',
+            value: '@'
+        },
+        link: function (scope, elem, attrs) {
+            var handler = function (setup) {
+                var checked = elem.prop('checked');
+                var index = scope.list.indexOf(scope.value);
+
+                if (checked && index == -1) {
+                    if (setup) elem.prop('checked', false);
+                    else scope.list.push(scope.value);
+                } else if (!checked && index != -1) {
+                    if (setup) elem.prop('checked', true);
+                    else scope.list.splice(index, 1);
+                }
+            };
+
+            var setupHandler = handler.bind(null, true);
+            var changeHandler = handler.bind(null, false);
+
+            elem.on('change', function () {
+                scope.$apply(changeHandler);
+            });
+            scope.$watch('list', setupHandler, true);
+        }
+    };
+});
+
 app.directive('permtable', function () {
     return{
         restrict: 'E',
@@ -47,7 +78,7 @@ app.directive('permtable', function () {
         },
         controller: ['$scope', 'RestApi', function ($scope, rest) {
             $scope.searchingNextPage = false;
-
+            $scope.groups = ['ADMIN', 'MANAGER'];
 
             $scope.searchNextPage = function (nextPage) {
                 $scope.searchingNextPage = true;
@@ -61,6 +92,28 @@ app.directive('permtable', function () {
                     $scope.searchingNextPage = false;
                 });
             }
+
         }]
+    };
+});
+
+app.directive('grouptd', function () {
+    return{
+        restrict: 'E',
+        replace: true,
+        templateUrl: '/static/html/group_td.html',
+        scope: {
+            groups: '=',
+            user: '='
+        },
+        controller: ['$scope', 'RestApi', function ($scope, rest) {
+            $scope.editingGroups = false;
+
+            $scope.updateUserGroups = function (user) {
+                console.log({'id': user.id, 'groups': user.groups});
+            }
+
+        }]
+
     };
 });

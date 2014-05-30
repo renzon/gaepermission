@@ -6,12 +6,16 @@
             <th>Id</th>
             <th>Email</th>
             <th>Name</th>
+            <th>Groups</th>
         </tr>
         </thead>
         <tr ng-repeat="u in users" ng-hide="showTable">
             <td>{{ u.id }}</td>
             <td>{{ u.email }}</td>
             <td>{{ u.name }}</td>
+            <td>
+            <grouptd groups="groups" user="u"></grouptd>
+            </td>
         </tr>
     </table>
     <button ng-show="moreResultsFlag && !searchingNextPage"
