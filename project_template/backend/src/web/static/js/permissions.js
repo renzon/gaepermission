@@ -112,8 +112,11 @@ app.directive('grouptd', function () {
             $scope.updateUserGroups = function (user) {
                 $scope.updatingGroups = true;
                 rest.updateUserGroups(user.update, {'groups': user.groups})
+                    .error(function(){
+                        alert('It is not possible to save changes. Refresh the page and try again');
+                    })
                     .always(function () {
-                        $scope.searchingNextPage = false;
+                        $scope.updatingGroups = false;
                     });
             }
 
