@@ -24,6 +24,10 @@
                             var defer = $http.post(url)
                             return patchDeferred(defer);
 
+                        },
+                        updateUserGroups:function(path, groups){
+                            var defer = $http.post(path,groups)
+                            return patchDeferred(defer);
                         }
                     };
                 }

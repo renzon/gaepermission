@@ -107,10 +107,14 @@ app.directive('grouptd', function () {
             user: '='
         },
         controller: ['$scope', 'RestApi', function ($scope, rest) {
-            $scope.editingGroups = false;
+            $scope.updatingGroups = false;
 
             $scope.updateUserGroups = function (user) {
-                console.log({'id': user.id, 'groups': user.groups});
+                $scope.updatingGroups = true;
+                rest.updateUserGroups(user.update, {'groups': user.groups})
+                    .always(function () {
+                        $scope.searchingNextPage = false;
+                    });
             }
 
         }]
