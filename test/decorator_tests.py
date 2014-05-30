@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from base import GAETestCase
-from gaepermission.decorator import has_permission, permissions, permission_not_required, login_not_required
+from gaepermission.decorator import has_permission, permissions, login_required, login_not_required
 from gaepermission.model import MainUser
 from mommygae import mommy
 
@@ -19,8 +19,8 @@ class PermissionTests(GAETestCase):
         f()
         self.assertTrue(self.executed)
 
-    def test_permission_not_required(self):
-        @permission_not_required
+    def test_login_required(self):
+        @login_required
         def f():
             self.executed = True
 
@@ -29,6 +29,7 @@ class PermissionTests(GAETestCase):
         self.assertTrue(has_permission(user, f))
         f()
         self.assertTrue(self.executed)
+        self.assertFalse(has_permission(None, f))
 
 
 class GroupTests(GAETestCase):

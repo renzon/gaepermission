@@ -15,7 +15,7 @@ def index(_write_tmpl):
                               'security_table_path': router.to_path(permission_home.index),
                               'permission_admin_path': router.to_path(admin),
                               'no_login_path': router.to_path(groups.nologin),
-                              'no_permission_path': router.to_path(groups.nopermission),
+                              'no_permission_path': router.to_path(groups.login_required),
                               'adm_path': router.to_path(groups.admin),
                               'adm_or_manager_path': router.to_path(groups.admin_or_manager),
                               'manager_path': router.to_path(groups.manager),

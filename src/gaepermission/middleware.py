@@ -24,5 +24,6 @@ class PermissionMiddleware(Middleware):
             if user is None:
                 self.handler.redirect(LOGIN_PATH)
             else:
+                self.handler.response.status_int = 403
                 self.handler.response.write('You have no access permission')
             return True

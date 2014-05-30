@@ -28,7 +28,7 @@ class InspectorTests(unittest.TestCase):
                           '/pack_stub/stub/sysowner',
                           '/pack_stub',
                           '/']
-        expected_groups = ['ADMIN', 'ADMIN, MANAGER', 'MANAGER', 'SYS_OWNER', 'Permission not Required',
+        expected_groups = ['ADMIN', 'ADMIN, MANAGER', 'MANAGER', 'SYS_OWNER', 'Login Required',
                            'Login not Required']
 
         expected_csrf = [True, True, True, True, False, False]
