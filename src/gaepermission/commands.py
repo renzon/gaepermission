@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from google.appengine.api import users
 from gaebusiness.business import Command
 from gaecookie import facade
-from gaegraph.business_base import DestinationsSearch
+from gaegraph.business_base import DestinationsSearch, NodeSearch
 from gaepermission.model import GoogleUser, ExternalToMainUser, MainUser
 
 
@@ -49,3 +49,17 @@ class GoogleLogin(Command):
             return ExternalToMainUser(origin=google_user_key, destination=main_user_key)
         if self.result:
             facade.write_cookie(self.response, self.user_cookie, {'id': self.result.key.id()}).execute()
+
+
+class UpdateUserGroups(NodeSearch):
+    def __init__(self, user_id, groups):
+        super(UpdateUserGroups, self).__init__(user_id)
+        self.groups = groups
+
+    def do_business(self, stop_on_error=False):
+        super(UpdateUserGroups, self).do_business(stop_on_error)
+        self.result.groups=self.groups
+
+    def commit(self):
+        return self.result
+

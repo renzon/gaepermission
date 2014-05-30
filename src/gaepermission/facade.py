@@ -4,7 +4,7 @@ from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import commands, inspector
-from gaepermission.commands import FakeCommand, GoogleLogin
+from gaepermission.commands import FakeCommand, GoogleLogin, UpdateUserGroups
 from gaepermission.model import MainUser
 from tekton import router
 
@@ -44,6 +44,13 @@ def login_google(google_user, response):
     '''
 
     return commands.GoogleLogin(google_user, response, USER_COOKIE_NAME)
+
+
+def update_user_groups(user_id, groups):
+    '''
+    Returns a command that updates user's groups of respective user_id.
+    '''
+    return UpdateUserGroups(user_id, groups)
 
 
 def find_users_by_email_starting_with(email_prefix=None, cursor=None, page_size=30):

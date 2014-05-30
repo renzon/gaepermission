@@ -15,7 +15,7 @@ def index(_write_tmpl):
 
 @permissions('ADMIN')
 def list_users(_json, email_prefix='', cursor=None):
-    cmd = facade.find_users_by_email_starting_with(email_prefix, cursor, 2)
+    cmd = facade.find_users_by_email_starting_with(email_prefix, cursor)
     users = cmd.execute().result
 
     def to_dict(user):
@@ -31,4 +31,4 @@ def list_users(_json, email_prefix='', cursor=None):
 
 @permissions('ADMIN')
 def update(user_id, groups):
-    pass
+    facade.update_user_groups(user_id, groups).execute()
