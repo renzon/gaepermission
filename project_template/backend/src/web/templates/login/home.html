@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {% block body %}
-    <div>
-        <a href="{{ login_google_path }}">Login with Google Account</a>
-    </div>
+    <ul>
+        <li>
+            <a href="{{ login_google_path }}">Login with Google Account</a>
+        </li>
+        <br />
+        <li>
+            <form action="{{ login_passwordless_path }}" method="post">
+                {{ csrf_input() }}
+                <input type="email" name="email" placeholder="Type your email"/>
+                <button type="submit">Login with Email</button>
+            </form>
+        </li>
+    </ul>
 {% endblock %}
