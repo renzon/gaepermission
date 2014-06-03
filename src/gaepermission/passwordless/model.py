@@ -11,3 +11,9 @@ class PasswordlessApp(Node):
     '''
     app_id = ndb.StringProperty(required=True, indexed=False)
     token = ndb.StringProperty(required=True, indexed=False)
+
+# class PasswordlessLoginToken(Node):
+#     '''
+#     Class to hold login sent token, so it is possible certify login calls
+#     '''
+#     token = ndb.StringProperty(required=True, indexed=False)

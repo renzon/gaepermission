@@ -14,7 +14,14 @@ def index(_write_tmpl):
 
 @login_not_required
 def send_email(_handler, email):
+    facade.send_passwordless_login_link(email, 'https://gaepermission.appspot.com' + router.to_path(check)).execute()
     _handler.redirect(router.to_path(index))
+
+
+@no_csrf
+@login_not_required
+def check(ticket):
+    pass
 
 
 @no_csrf

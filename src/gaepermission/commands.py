@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 from google.appengine.api import users
 from gaebusiness.business import Command
+from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade
 from gaegraph.business_base import DestinationsSearch, NodeSearch
 from gaepermission.model import GoogleUser, ExternalToMainUser, MainUser
@@ -14,6 +15,15 @@ class FakeCommand(Command):
 
     def do_business(self, stop_on_error=True):
         pass
+
+
+class GetMainUserByEmail(ModelSearchCommand):
+    def __init__(self, email):
+        super(GetMainUserByEmail, self).__init__(MainUser.query_email(email), 1)
+
+    def do_business(self, stop_on_error=True):
+        super(GetMainUserByEmail, self).do_business(stop_on_error)
+        self.result = self.result[0] if self.result else None
 
 
 class GoogleLogin(Command):
@@ -58,7 +68,7 @@ class UpdateUserGroups(NodeSearch):
 
     def do_business(self, stop_on_error=False):
         super(UpdateUserGroups, self).do_business(stop_on_error)
-        self.result.groups=self.groups
+        self.result.groups = self.groups
 
     def commit(self):
         return self.result

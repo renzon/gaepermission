@@ -4,9 +4,9 @@ from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import commands, inspector
-from gaepermission.commands import FakeCommand, GoogleLogin, UpdateUserGroups
+from gaepermission.commands import FakeCommand, GoogleLogin, UpdateUserGroups, GetMainUserByEmail
 from gaepermission.model import MainUser
-from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp
+from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp, SengLoginEmail
 from tekton import router
 
 USER_COOKIE_NAME = 'userck'
@@ -66,26 +66,34 @@ def find_users_by_email_starting_with(email_prefix=None, cursor=None, page_size=
                               page_size, cursor, cache_begin=None)
 
 
-def send_passwordless_login_link(email):
+def send_passwordless_login_link(email,return_url, lang='en_US', url_login='https://pswdless.appspot.com/rest/login'):
     '''
-    :param email: The email where login link must be sent
+
+    :param app_id: The Passwordless app's id
+    :param token: The Passwordless app's token
+    :param return_url: The url user will be redirected after clicking login link
     :return: command that communicate with passsworless to sent the email
     '''
-    pass
+    return SengLoginEmail(email,return_url, lang, url_login)
 
 
 def save_or_update_passwordless_app_data(id=None, token=None):
     '''
     :param id: The App's id
-    :param token: The App's tokein
+    :param token: The App's token
     :return: a command that save or update existing Passworoldless App Data
     See https://pswdless.appspot.com/api#register-sites
     '''
     return SaveOrUpdateApp(id, token)
 
+
 def get_passwordless_app_data():
     '''
-    :return: a command that returns the Passworoldless App Data from db
+    :return: a command that returns the Passwordless App Data from db
     '''
     return GetApp()
+
+
+
+
 
