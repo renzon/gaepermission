@@ -6,6 +6,7 @@ from gaegraph.business_base import NodeSearch
 from gaepermission import commands, inspector
 from gaepermission.commands import FakeCommand, GoogleLogin, UpdateUserGroups
 from gaepermission.model import MainUser
+from gaepermission.passwordless.commands import SaveOrUpdateApp
 from tekton import router
 
 USER_COOKIE_NAME = 'userck'
@@ -20,7 +21,7 @@ def web_path_security_info():
 
 def logout(response):
     '''
-    Returns a command that logout the user out removing her id from cookie
+    Returns a command that log the user out, removing her id from cookie
     '''
     return cookie_facade.delete_cookie(response, USER_COOKIE_NAME)
 
@@ -63,3 +64,22 @@ def find_users_by_email_starting_with(email_prefix=None, cursor=None, page_size=
 
     return ModelSearchCommand(MainUser.query_email_starts_with(email_prefix),
                               page_size, cursor, cache_begin=None)
+
+
+def send_passwordless_login_link(email):
+    '''
+    :param email: The email where login link must be sent
+    :return: command that communicate with passsworless to sent the email
+    '''
+    pass
+
+
+def save_or_update_passwordless_app_data(id=None, token=None):
+    '''
+    :param id: The App's id
+    :param token: The App's tokein
+    :return: a command that save or update existing Passworoldless App Data
+    See https://pswdless.appspot.com/api#register-sites
+    '''
+    return SaveOrUpdateApp(id, token)
+

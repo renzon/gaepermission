@@ -11,7 +11,7 @@ class MainUser(Node):
 
     @classmethod
     def query_email_starts_with(cls, prefix=''):
-        last_str_with_prefix = prefix + unichr(0x110000-1)
+        last_str_with_prefix = prefix + unichr(0x110000 - 1)
         return cls.query(cls.email >= prefix, cls.email < last_str_with_prefix).order(cls.email)
 
 
@@ -27,6 +27,14 @@ class GoogleUser(Node):
     @classmethod
     def query_by_google_id(cls, google_id):
         return cls.query(cls.google_id == google_id)
+
+
+class PassswordlessUser(Node):
+    pless_id = ndb.StringProperty(required=True)  # id on Passwordless
+
+    @classmethod
+    def query_by_passworless_id(cls, id):
+        return cls.query(cls.pless_id == id)
 
 
 
