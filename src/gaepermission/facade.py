@@ -6,7 +6,7 @@ from gaegraph.business_base import NodeSearch
 from gaepermission import commands, inspector
 from gaepermission.commands import FakeCommand, GoogleLogin, UpdateUserGroups
 from gaepermission.model import MainUser
-from gaepermission.passwordless.commands import SaveOrUpdateApp
+from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp
 from tekton import router
 
 USER_COOKIE_NAME = 'userck'
@@ -82,4 +82,10 @@ def save_or_update_passwordless_app_data(id=None, token=None):
     See https://pswdless.appspot.com/api#register-sites
     '''
     return SaveOrUpdateApp(id, token)
+
+def get_passwordless_app_data():
+    '''
+    :return: a command that returns the Passworoldless App Data from db
+    '''
+    return GetApp()
 
