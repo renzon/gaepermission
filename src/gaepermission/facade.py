@@ -6,7 +6,7 @@ from gaegraph.business_base import NodeSearch
 from gaepermission import commands, inspector
 from gaepermission.commands import FakeCommand, GoogleLogin, UpdateUserGroups, GetMainUserByEmail
 from gaepermission.model import MainUser
-from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp, SengLoginEmail
+from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp, SengLoginEmail, Login
 from tekton import router
 
 USER_COOKIE_NAME = 'userck'
@@ -39,12 +39,15 @@ def logged_user(request):
 
 def login_google(google_user, response):
     '''
-    Googe user must be the user returnet from get_current_user from users module provided by App Engine
+    Google user must be the user returned from get_current_user from users module provided by App Engine
     Returns a command that log user in based on her google account credentials.
     The logged user (MainUser) is provides on result or None if the user is not logged with her Google Account
     '''
 
     return commands.GoogleLogin(google_user, response, USER_COOKIE_NAME)
+
+def login_passwordless(ticket,response,detail_url='https://pswdless.appspot.com/rest/detail'):
+    return Login(ticket, response, USER_COOKIE_NAME,detail_url)
 
 
 def update_user_groups(user_id, groups):

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from google.appengine.api import users
 from gaebusiness.business import Command
 from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade
