@@ -96,7 +96,7 @@ class PasswordlessDetailCheck(GetApp):
                                         'POST').execute()
             self.errors.update(fetch_cmd.errors)
             if not self.errors:
-                dct = json.loads(fetch_cmd.result)
+                dct = json.loads(fetch_cmd.result.content)
                 cmd_list = GetMainUserByEmail(dct['email']) + GetPasswordlessUser(dct['id'])
                 cmd_list.execute()
                 main_user, passwordless_user = cmd_list[0].result, cmd_list[1].result

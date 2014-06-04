@@ -20,8 +20,9 @@ def send_email(_handler, email):
 
 @no_csrf
 @login_not_required
-def check(ticket):
-    pass
+def check(_handler, _resp, ticket):
+    facade.login_passwordless(ticket, _resp).execute()
+    _handler.redirect('/')
 
 
 @no_csrf

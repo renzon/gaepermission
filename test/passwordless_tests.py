@@ -153,7 +153,7 @@ class LoginTests(GAETestCase):
         fetch_cmd_obj = Mock()
         fetch_cmd_obj.errors = {}
         fetch_cmd_obj.execute = Mock(return_value=fetch_cmd_obj)
-        fetch_cmd_obj.result = json.dumps({'id': "654321", 'email': "foo@bar.com"})
+        fetch_cmd_obj.result.content = json.dumps({'id': "654321", 'email': "foo@bar.com"})
         fetch_command_cls.return_value = fetch_cmd_obj
         return app, fetch_cmd_obj, Mock()
 
