@@ -4,8 +4,8 @@ from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import commands, inspector
-from gaepermission.commands import FakeCommand, GoogleLogin, UpdateUserGroups, GetMainUserByEmail
-from gaepermission.facebook.commands import SaveOrUpdateFacebookApp, GetFacebookApp
+from gaepermission.commands import FakeCommand, UpdateUserGroups
+from gaepermission.facebook.commands import GetFacebookApp, SaveOrUpdateFacebookApp
 from gaepermission.model import MainUser
 from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp, SengLoginEmail, Login
 from tekton import router

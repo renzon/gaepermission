@@ -38,5 +38,3 @@ class SaveOrUpdateFacebookApp(GetFacebookApp):
 
     def commit(self):
         return self.result
-
-
