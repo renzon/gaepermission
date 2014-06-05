@@ -5,7 +5,7 @@ from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import commands, inspector
 from gaepermission.commands import FakeCommand, UpdateUserGroups
-from gaepermission.facebook.commands import GetFacebookApp, SaveOrUpdateFacebookApp
+from gaepermission.facebook.commands import GetFacebookApp, SaveOrUpdateFacebookApp, LogFacebookUserIn, FetchFacebook
 from gaepermission.model import MainUser
 from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp, SengLoginEmail, Login
 from tekton import router
@@ -114,3 +114,13 @@ def save_or_update_facebook_app_data(id=None, token=None):
     See https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/v2.0
     """
     return SaveOrUpdateFacebookApp(id, token)
+
+
+def login_facebook(token, response):
+    """
+
+    :param token: facebook request token
+    :param response: http response from webapp2
+    :return: a command that log the facebook user in
+    """
+    return LogFacebookUserIn(token, response, USER_COOKIE_NAME)

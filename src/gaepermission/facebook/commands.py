@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+import json
 
 from google.appengine.api import memcache
+from google.appengine.ext import ndb
 
-from gaebusiness.gaeutil import ModelSearchCommand
+from gaebusiness.gaeutil import ModelSearchCommand, UrlFetchCommand
+from gaecookie import facade
+from gaegraph.business_base import SingleDestinationSearh
 from gaepermission.facebook.model import FacebookApp
+from gaepermission.model import FacebookUser, ExternalToMainUser, MainUser
 
 
 class GetFacebookApp(ModelSearchCommand):
@@ -38,3 +43,50 @@ class SaveOrUpdateFacebookApp(GetFacebookApp):
 
     def commit(self):
         return self.result
+
+
+class GetFacebookUser(ModelSearchCommand):
+    def __init__(self, facebook_id):
+        super(GetFacebookUser, self).__init__(FacebookUser.query_by_facebook_id(facebook_id), 1)
+
+    def do_business(self, stop_on_error=True):
+        super(GetFacebookUser, self).do_business(stop_on_error)
+        self.result = self.result[0] if self.result else None
+
+
+class FetchFacebook(UrlFetchCommand):
+    def __init__(self, token):
+        super(FetchFacebook, self).__init__('https://graph.facebook.com/v2.0/me',
+                                            {'fields': 'id,email,name',
+                                             'access_token': token})
+        self._to_commit = None
+
+    def do_business(self, stop_on_error=True):
+        super(FetchFacebook, self).do_business(stop_on_error)
+        if not self.errors:
+            dct = json.loads(self.result.content)
+            self.result = None
+            facebook_user = GetFacebookUser(dct['id']).execute().result
+            if facebook_user:
+                self.result = SingleDestinationSearh(ExternalToMainUser, facebook_user).execute().result
+            else:
+                self.result = MainUser(name=dct['name'], email=dct['email'])
+                main_user = self.result
+                facebook_user = FacebookUser(facebook_id=dct['id'])
+                ndb.put_multi([main_user, facebook_user])
+                self._to_commit = ExternalToMainUser(origin=facebook_user.key, destination=main_user.key)
+
+    def commit(self):
+        return self._to_commit
+
+
+class LogFacebookUserIn(FetchFacebook):
+    def __init__(self, token, response, user_cookie_name):
+        super(LogFacebookUserIn, self).__init__(token)
+        self.user_cookie_name = user_cookie_name
+        self.response = response
+
+    def do_business(self, stop_on_error=True):
+        super(LogFacebookUserIn, self).do_business(stop_on_error)
+        facade.write_cookie(self.response, self.user_cookie_name, {'id': self.result.key.id()}).execute()
+

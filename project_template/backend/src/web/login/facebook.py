@@ -6,9 +6,10 @@ from gaepermission.decorator import login_not_required
 from tekton import router
 
 
-def index():
-    pass
-
+@login_not_required
+def index(_handler, _resp, token):
+    facade.login_facebook(token, _resp).execute()
+    _handler.redirect('/')
 
 
 @no_csrf

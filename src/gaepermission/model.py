@@ -41,5 +41,13 @@ class PasswordlessUser(Node):
         return cls.query(cls.pswdless_id == id)
 
 
+class FacebookUser(Node):
+    facebook_id = ndb.StringProperty(required=True)  # id on Passwordless
+
+    @classmethod
+    def query_by_facebook_id(cls, id):
+        return cls.query(cls.facebook_id == id)
+
+
 
 
