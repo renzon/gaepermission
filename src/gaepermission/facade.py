@@ -3,9 +3,10 @@ from __future__ import absolute_import, unicode_literals
 from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
-from gaepermission import commands, inspector
+from gaepermission import inspector
 from gaepermission.commands import FakeCommand, UpdateUserGroups
 from gaepermission.facebook.commands import GetFacebookApp, SaveOrUpdateFacebookApp, LogFacebookUserIn, FetchFacebook
+from gaepermission.google.commands import GoogleLogin
 from gaepermission.model import MainUser
 from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp, SengLoginEmail, Login
 from tekton import router
@@ -45,7 +46,7 @@ def login_google(google_user, response):
     The logged user (MainUser) is provides on result or None if the user is not logged with her Google Account
     """
 
-    return commands.GoogleLogin(google_user, response, USER_COOKIE_NAME)
+    return GoogleLogin(google_user, response, USER_COOKIE_NAME)
 
 
 def login_passwordless(ticket, response, detail_url='https://pswdless.appspot.com/rest/detail'):

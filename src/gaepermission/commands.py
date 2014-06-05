@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from gaebusiness.business import Command
+from gaebusiness.business import Command, CommandList
 from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade
-from gaegraph.business_base import DestinationsSearch, NodeSearch
-from gaepermission.model import GoogleUser, ExternalToMainUser, MainUser
+from gaegraph.business_base import NodeSearch, SingleDestinationSearh
+from gaepermission.model import MainUser, ExternalToMainUser, PendingExternalToMainUser
 
 
 class FakeCommand(Command):
@@ -16,6 +16,10 @@ class FakeCommand(Command):
         pass
 
 
+def log_main_user_in(main_user, response, user_cookie):
+    facade.write_cookie(response, user_cookie, {'id': main_user.key.id()}).execute()
+
+
 class GetMainUserByEmail(ModelSearchCommand):
     def __init__(self, email):
         super(GetMainUserByEmail, self).__init__(MainUser.query_email(email), 1)
@@ -23,41 +27,6 @@ class GetMainUserByEmail(ModelSearchCommand):
     def do_business(self, stop_on_error=True):
         super(GetMainUserByEmail, self).do_business(stop_on_error)
         self.result = self.result[0] if self.result else None
-
-
-class GoogleLogin(Command):
-    def __init__(self, google_user, response, user_cookie):
-        super(GoogleLogin, self).__init__()
-        self.google_user = google_user
-        self.user_cookie = user_cookie
-        self.response = response
-        self._google_user_future = None
-        self._save_google_user_future = None
-
-    def set_up(self):
-        if self.google_user:
-            query = GoogleUser.query_by_google_id(self.google_user.user_id())
-            self._google_user_future = query.get_async(keys_only=True)
-
-    def do_business(self, stop_on_error=True):
-        if self._google_user_future:
-            g_user_key = self._google_user_future.get_result()
-            if g_user_key:
-                self.result = DestinationsSearch(ExternalToMainUser, g_user_key).execute().result[0]
-            else:
-                g_user = self.google_user
-                self._save_google_user_future = GoogleUser(google_id=g_user.user_id()).put_async()
-                self.result = MainUser(name=g_user.nickname(), email=g_user.email())
-                self._save_main_user = self.result.put_async()
-
-    def commit(self):
-        if self._save_google_user_future:
-            google_user_key = self._save_google_user_future.get_result()
-            main_user_key = self._save_main_user.get_result()
-            facade.write_cookie(self.response, self.user_cookie, {'id': self.result.key.id()}).execute()
-            return ExternalToMainUser(origin=google_user_key, destination=main_user_key)
-        if self.result:
-            facade.write_cookie(self.response, self.user_cookie, {'id': self.result.key.id()}).execute()
 
 
 class UpdateUserGroups(NodeSearch):
@@ -71,4 +40,40 @@ class UpdateUserGroups(NodeSearch):
 
     def commit(self):
         return self.result
+
+
+class FindMainUserFromExternalUserId(ModelSearchCommand):
+    def __init__(self, query):
+        super(FindMainUserFromExternalUserId, self).__init__(query, 1)
+        self.external_user = None
+
+    def do_business(self, stop_on_error=True):
+        super(FindMainUserFromExternalUserId, self).do_business(stop_on_error)
+        external_user = self.result[0] if self.result else None
+        if external_user:
+            self.result = SingleDestinationSearh(ExternalToMainUser, external_user.key).execute().result
+            self.external_user = external_user
+        else:
+            self.result = None
+
+
+class CheckMainUserEmailConflict(CommandList):
+    def __init__(self, email, find_main_user_from_external_user_cmd):
+        super(CheckMainUserEmailConflict, self).__init__(
+            [GetMainUserByEmail(email), find_main_user_from_external_user_cmd])
+        self.external_user = None
+        self.main_user_from_external = None
+        self.main_user_from_email = None
+
+
+    def do_business(self, stop_on_error=True):
+        super(CheckMainUserEmailConflict, self).do_business(stop_on_error)
+        self.result = True
+        self.external_user = self[1].external_user
+        self.main_user_from_external = self[1].result
+        self.main_user_from_email = self[0].result
+
+        if self.main_user_from_email and not self.main_user_from_external:
+            self.result = False
+
 

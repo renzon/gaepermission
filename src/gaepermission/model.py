@@ -25,6 +25,16 @@ class ExternalToMainUser(Arc):
     destination = ndb.KeyProperty(MainUser, required=True)
 
 
+class PendingExternalToMainUser(Node):
+    """
+    Class used to create ExternalToMainUser after email confirmation
+    """
+    main_user = ndb.KeyProperty(MainUser, required=True, indexed=False)
+    external_user = ndb.KeyProperty(required=True, indexed=False)
+    # name = ndb.StringProperty(required=True, indexed=False)
+    # email = ndb.StringProperty(required=True, indexed=False)
+
+
 class GoogleUser(Node):
     google_id = ndb.StringProperty(required=True)
 
