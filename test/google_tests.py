@@ -3,71 +3,15 @@ from __future__ import absolute_import, unicode_literals
 from base import GAETestCase
 from gaegraph.business_base import OriginsSearch
 from gaepermission import facade
-from gaepermission.google.commands import FindMainUserFromGoogleUser, CheckMainUserGoogleEmailConflict
 from gaepermission.model import MainUser, ExternalToMainUser, GoogleUser, PendingExternalToMainUser
 from mock import Mock, patch
 from mommygae import mommy
 
 
-class FindMainUserFromGoogleUserTests(GAETestCase):
-    def test_no_user(self):
-        cmd = FindMainUserFromGoogleUser('external_id').execute()
-        self.assertIsNone(cmd.result)
-        self.assertIsNone(cmd.external_user)
-
-    def test_google_user_only(self):
-        google_user = mommy.save_one(GoogleUser, external_id='external_id')
-        cmd = FindMainUserFromGoogleUser('external_id').execute()
-        self.assertIsNone(cmd.result)
-        self.assertEqual(google_user, cmd.external_user)
-
-    def test_main_user(self):
-        google_user = mommy.save_one(GoogleUser, external_id='external_id')
-        main_user = mommy.save_one(MainUser)
-        ExternalToMainUser(origin=google_user.key, destination=main_user.key).put()
-        cmd = FindMainUserFromGoogleUser('external_id').execute()
-        self.assertEqual(main_user, cmd.result)
-        self.assertEqual(google_user, cmd.external_user)
-
-
-class CheckMainUserGoogleEmailConflictTests(GAETestCase):
-    def test_first_login_with_no_conflict(self):
-        cmd = CheckMainUserGoogleEmailConflict('foo@gmail.com', 'external_id').execute()
-        self.assertTrue(cmd.result)
-        self.assertIsNone(cmd.external_user)
-        self.assertIsNone(cmd.main_user_from_email)
-        self.assertIsNone(cmd.main_user_from_external)
-
-    def test_second_login_with_no_conflict(self):
-        google_user = mommy.save_one(GoogleUser, external_id='external_id')
-        cmd = CheckMainUserGoogleEmailConflict('foo@gmail.com', 'external_id').execute()
-        self.assertTrue(cmd.result)
-        self.assertEqual(google_user, cmd.external_user)
-        self.assertIsNone(cmd.main_user_from_email)
-        self.assertIsNone(cmd.main_user_from_external)
-
-    def test_first_login_with_conflict(self):
-        main_user = mommy.save_one(MainUser, email='foo@gmail.com')
-        cmd = CheckMainUserGoogleEmailConflict('foo@gmail.com', 'external_id').execute()
-        self.assertFalse(cmd.result)
-        self.assertEqual(main_user, cmd.main_user_from_email)
-        self.assertIsNone(cmd.external_user)
-        self.assertIsNone(cmd.main_user_from_external)
-
-    def test_already_linked_google_user(self):
-        google_user = mommy.save_one(GoogleUser, external_id='external_id')
-        main_user_from_external = mommy.save_one(MainUser)
-        ExternalToMainUser(origin=google_user.key, destination=main_user_from_external.key).put()
-        main_user_from_email = mommy.save_one(MainUser, email='foo@gmail.com')
-        cmd = CheckMainUserGoogleEmailConflict('foo@gmail.com', 'external_id').execute()
-        self.assertTrue(cmd.result)
-        self.assertEqual(main_user_from_email, cmd.main_user_from_email)
-        self.assertEqual(google_user, cmd.external_user)
-        self.assertEqual(main_user_from_external, cmd.main_user_from_external)
 
 
 class GoogleLoginTests(GAETestCase):
-    @patch('gaepermission.google.commands.log_main_user_in')
+    @patch('gaepermission.base_commands.log_main_user_in')
     def test_google_user_logged_for_the_first_time_with_no_conflict(self, log_main_user_in):
         google_account_user = self.mock_google_account_user()
         response = Mock()
@@ -96,7 +40,7 @@ class GoogleLoginTests(GAETestCase):
         GoogleUser(external_id='123').put()
         self.test_google_user_logged_for_the_first_time_with_conflict()
 
-    @patch('gaepermission.google.commands.log_main_user_in')
+    @patch('gaepermission.base_commands.log_main_user_in')
     def test_google_user_logged_for_the_first_time_with_conflict(self, log_main_user_in):
         google_account_user = self.mock_google_account_user()
         main_user = mommy.save_one(MainUser, email='foo@gmail.com')
@@ -114,7 +58,7 @@ class GoogleLoginTests(GAETestCase):
         self.assertEqual('123', cmd.external_user.external_id)
         self.assertFalse(log_main_user_in.called)
 
-    @patch('gaepermission.google.commands.log_main_user_in')
+    @patch('gaepermission.base_commands.log_main_user_in')
     def test_google_user_logged_for_the_second_time(self, log_main_user_in):
         google_account_user = self.mock_google_account_user()
         g_key = GoogleUser(external_id='123').put()

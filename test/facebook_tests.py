@@ -1,42 +1,91 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from google.appengine.api import memcache
 from base import GAETestCase
+from gaegraph.business_base import OriginsSearch
 from gaepermission import facade
-from gaepermission.facebook.commands import GetFacebookApp
+from gaepermission.model import MainUser, ExternalToMainUser, FacebookUser, PendingExternalToMainUser
+from mock import patch, Mock
+from mommygae import mommy
 
 
-class AppDataTests(GAETestCase):
-    def test_save_or_update(self):
-        get_app = GetFacebookApp()
-        self.assertIsNone(get_app.execute().result)
-        facade.save_or_update_facebook_app_data('1', 't').execute()
-        self.assertIsNone(memcache.get(get_app._cache_key()))
-        app = GetFacebookApp().execute().result
-        self.assertEqual('1', app.app_id)
-        self.assertEqual('t', app.token)
+class FacebookLoginTests(GAETestCase):
+    def setup_fetch_mock(self):
+        fetch_mock = Mock()
+        fetch_mock.result = {'id': '123', 'email': 'foo@gmail.com', 'name': 'foo'}
+        fetch_mock.errors = {}
+        return fetch_mock
 
-        facade.save_or_update_facebook_app_data('2').execute()
-        self.assertIsNone(memcache.get(get_app._cache_key()))
-        app2 = GetFacebookApp().execute().result
-        self.assertEqual('2', app2.app_id)
-        self.assertEqual('t', app2.token)
-        self.assertEqual(app, app2)
+    @patch('gaepermission.base_commands.log_main_user_in')
+    def test_facebook_user_logged_for_the_first_time_with_no_conflict(self, log_main_user_in):
+        response = Mock()
+        fetch_mock = self.setup_fetch_mock()
+        cmd = facade.login_facebook('', response)
 
-        facade.save_or_update_facebook_app_data(token='t2').execute()
-        self.assertIsNone(memcache.get(get_app._cache_key()))
-        app3 = GetFacebookApp().execute().result
-        self.assertEqual('2', app3.app_id)
-        self.assertEqual('t2', app3.token)
-        self.assertEqual(app, app3)
+        cmd._fetch_facebook=fetch_mock
+        cmd.execute()
 
-        facade.save_or_update_facebook_app_data('1', 't').execute()
-        self.assertIsNone(memcache.get(get_app._cache_key()))
-        app4 = GetFacebookApp().execute().result
-        self.assertEqual('1', app4.app_id)
-        self.assertEqual('t', app4.token)
-        self.assertEqual(app, app4)
+        self.assertTrue(cmd.result)
+        user = cmd.main_user_from_external
+        self.assertEqual('foo@gmail.com', user.email)
+        self.assertEqual('foo', user.name)
+        self.assertEqual(MainUser.query().get(), user)
+        facebook_user = OriginsSearch(ExternalToMainUser, user).execute().result[0]
+        self.assertEqual('123', facebook_user.external_id)
+        log_main_user_in.assert_called_once_with(user, response, 'userck')
+        self.assertIsNone(cmd.pending_link)
 
+
+
+    def test_facebook_user_logged_for_the_second_time_with_conflict(self):
+        FacebookUser(external_id='123').put()
+        self.test_facebook_user_logged_for_the_first_time_with_conflict()
+
+    @patch('gaepermission.base_commands.log_main_user_in')
+    def test_facebook_user_logged_for_the_first_time_with_conflict(self, log_main_user_in):
+        main_user = mommy.save_one(MainUser, email='foo@gmail.com')
+
+        response = Mock()
+        fetch_mock = self.setup_fetch_mock()
+        cmd = facade.login_facebook('', response)
+
+        cmd._fetch_facebook=fetch_mock
+        cmd.execute()
+        self.assertFalse(cmd.result)
+        self.assertIsNone(cmd.main_user_from_external)
+
+        self.assertEqual(1, len(FacebookUser.query().fetch()))
+        self.assertEqual(1, len(MainUser.query().fetch()))
+        self.assertIsNotNone(cmd.pending_link)
+        self.assertEqual(PendingExternalToMainUser.query().get(), cmd.pending_link)
+        self.assertEqual(cmd.external_user.key, cmd.pending_link.external_user)
+        self.assertEqual(main_user.key, cmd.pending_link.main_user)
+        self.assertEqual('123', cmd.external_user.external_id)
+        self.assertFalse(log_main_user_in.called)
+
+    @patch('gaepermission.base_commands.log_main_user_in')
+    def test_facebook_user_logged_for_the_second_time(self, log_main_user_in):
+        f_key = FacebookUser(external_id='123').put()
+        main_user = MainUser(name='foo', email='foo@gmail.com')
+        main_user.put()
+        ExternalToMainUser(origin=f_key, destination=main_user.key.id()).put()
+
+        response = Mock()
+        fetch_mock = self.setup_fetch_mock()
+        cmd = facade.login_facebook('', response)
+
+        cmd._fetch_facebook=fetch_mock
+        cmd.execute()
+
+        self.assertTrue(cmd.result)
+
+        user = cmd.main_user_from_external
+        self.assertEqual('foo@gmail.com', user.email)
+        self.assertEqual('foo', user.name)
+        self.assertEqual(main_user, user)
+        self.assertEqual(1, len(FacebookUser.query().fetch()))
+        self.assertEqual(1, len(MainUser.query().fetch()))
+        self.assertIsNone(cmd.pending_link)
+        log_main_user_in.assert_called_once_with(user, response, 'userck')
 
 
 

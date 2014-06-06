@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from google.appengine.ext import ndb
 from gaebusiness.business import Command, CommandList
 from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade
@@ -43,8 +44,9 @@ class UpdateUserGroups(NodeSearch):
 
 
 class FindMainUserFromExternalUserId(ModelSearchCommand):
-    def __init__(self, query):
-        super(FindMainUserFromExternalUserId, self).__init__(query, 1)
+    def __init__(self, external_user_class, external_id):
+        super(FindMainUserFromExternalUserId,
+              self).__init__(external_user_class.query_by_external_id(external_id), 1)
         self.external_user = None
 
     def do_business(self, stop_on_error=True):
@@ -58,9 +60,9 @@ class FindMainUserFromExternalUserId(ModelSearchCommand):
 
 
 class CheckMainUserEmailConflict(CommandList):
-    def __init__(self, email, find_main_user_from_external_user_cmd):
+    def __init__(self, external_user_class, external_id, email):
         super(CheckMainUserEmailConflict, self).__init__(
-            [GetMainUserByEmail(email), find_main_user_from_external_user_cmd])
+            [GetMainUserByEmail(email), FindMainUserFromExternalUserId(external_user_class, external_id)])
         self.external_user = None
         self.main_user_from_external = None
         self.main_user_from_email = None
@@ -77,3 +79,37 @@ class CheckMainUserEmailConflict(CommandList):
             self.result = False
 
 
+class Login(CheckMainUserEmailConflict):
+    def __init__(self, external_user_class, external_id, email, user_name, response,user_cookie):
+        super(Login, self).__init__(external_user_class, external_id, email)
+        self.user_name = user_name
+        self.user_cookie = user_cookie
+        self.response = response
+        self._arc = None
+        self.pending_link = None
+        self.external_user_class = external_user_class
+        self.external_id = external_id
+        self.email = email
+
+
+    def do_business(self, stop_on_error=True):
+        super(Login, self).do_business(stop_on_error)
+
+        # if no conflict
+        if self.result:
+            if self.external_user is None and self.main_user_from_external is None:
+                self.external_user = self.external_user_class(external_id=self.external_id)
+                self.main_user_from_external = MainUser(name=self.user_name,
+                                                        email=self.email)
+                external_user_key, main_user_key = ndb.put_multi([self.external_user, self.main_user_from_external])
+                self._arc = ExternalToMainUser(origin=external_user_key, destination=main_user_key)
+            log_main_user_in(self.main_user_from_external, self.response, self.user_cookie)
+        else:
+            if self.external_user is None:
+                self.external_user = self.external_user_class(external_id=self.external_id)
+                self.external_user.put()
+            self.pending_link = PendingExternalToMainUser(external_user=self.external_user.key,
+                                                          main_user=self.main_user_from_email.key)
+
+    def commit(self):
+        return [m for m in [self._arc, self.pending_link] if m]
