@@ -5,6 +5,7 @@ from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import inspector
 from gaepermission.base_commands import FakeCommand, UpdateUserGroups
+from gaepermission.base_commands2 import LoginCheckingEmail
 from gaepermission.facebook.commands import GetFacebookApp, SaveOrUpdateFacebookApp, LogFacebookUserIn, FetchFacebook
 from gaepermission.google.commands import GoogleLogin
 from gaepermission.model import MainUser
@@ -50,7 +51,25 @@ def login_google(google_user, response):
 
 
 def login_passwordless(ticket, response, detail_url='https://pswdless.appspot.com/rest/detail'):
+    """
+    Log user in using Passwordless service
+    :param ticket: ticket returned from Passwordless
+    :param response: Response object from webapp2
+    :param detail_url: url to check ticket and user data
+    :return: a Command that log user in when executed
+    """
     return Login(ticket, response, USER_COOKIE_NAME, detail_url)
+
+def login_checking_email(pending_id,ticket, response, detail_url='https://pswdless.appspot.com/rest/detail'):
+    """
+    Log user in using Passwordless service
+    :param pending_id: PendingExternalToMainUser's id
+    :param ticket: ticket returned from Passwordless
+    :param response: Response object from webapp2
+    :param detail_url: url to check ticket and user data
+    :return: a Command that log user in when executed
+    """
+    return LoginCheckingEmail(pending_id,ticket, response, USER_COOKIE_NAME, detail_url)
 
 
 def update_user_groups(user_id, groups):
