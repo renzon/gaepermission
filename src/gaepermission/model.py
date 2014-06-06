@@ -35,13 +35,16 @@ class PendingExternalToMainUser(Node):
     # email = ndb.StringProperty(required=True, indexed=False)
 
 
-class GoogleUser(Node):
-    google_id = ndb.StringProperty(required=True)
+class ExternalUser(Node):
+    external_id = ndb.StringProperty(required=True)
 
     @classmethod
-    def query_by_google_id(cls, google_id):
-        return cls.query(cls.google_id == google_id)
+    def query_by_external_id(cls, external_id):
+        return cls.query(cls.external_id == external_id)
 
+
+class GoogleUser(ExternalUser):
+    pass
 
 class PasswordlessUser(Node):
     pswdless_id = ndb.StringProperty(required=True)  # id on Passwordless
