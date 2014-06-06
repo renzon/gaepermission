@@ -46,8 +46,8 @@ class SaveOrUpdateFacebookApp(GetFacebookApp):
 
 
 class GetFacebookUser(ModelSearchCommand):
-    def __init__(self, facebook_id):
-        super(GetFacebookUser, self).__init__(FacebookUser.query_by_facebook_id(facebook_id), 1)
+    def __init__(self, external_id):
+        super(GetFacebookUser, self).__init__(FacebookUser.query_by_external_id(external_id), 1)
 
     def do_business(self, stop_on_error=True):
         super(GetFacebookUser, self).do_business(stop_on_error)
@@ -72,7 +72,7 @@ class FetchFacebook(UrlFetchCommand):
             else:
                 self.result = MainUser(name=dct['name'], email=dct['email'])
                 main_user = self.result
-                facebook_user = FacebookUser(facebook_id=dct['id'])
+                facebook_user = FacebookUser(external_id=dct['id'])
                 ndb.put_multi([main_user, facebook_user])
                 self._to_commit = ExternalToMainUser(origin=facebook_user.key, destination=main_user.key)
 

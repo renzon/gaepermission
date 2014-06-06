@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from google.appengine.ext import ndb
 from base import GAETestCase
-from gaepermission.model import MainUser
+from gaepermission.model import MainUser, GoogleUser, FacebookUser
 from mommygae import mommy
 
 
@@ -23,3 +24,8 @@ class UserTests(GAETestCase):
         db_users = MainUser.query_email_starts_with('ab').fetch()
         self.assertListEqual([abc_user], db_users)
 
+    def test_no_conflict_with_different_external_users(self):
+        g=GoogleUser(external_id='1')
+        f=FacebookUser(external_id='1')
+        ndb.put_multi([g,f])
+        self.assertEqual(1,GoogleUser.query_by_external_id('1').count())

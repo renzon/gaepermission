@@ -114,7 +114,7 @@ class LoginTests(GAETestCase):
         app, fetch_cmd_obj, response = self.setup_base_mock(fetch_command_cls)
 
         main_user_on_db = mommy.save_one(MainUser, email="foo@bar.com")
-        p_user_on_db = mommy.save_one(PasswordlessUser, pswdless_id="654321")
+        p_user_on_db = mommy.save_one(PasswordlessUser, external_id="654321")
         ExternalToMainUser(origin=p_user_on_db.key, destination=main_user_on_db.key).put()
 
         main_user = facade.login_passwordless('0123',
@@ -135,7 +135,7 @@ class LoginTests(GAETestCase):
 
         main_user_same_email_but_not_related_to_passwordless = mommy.save_one(MainUser, email="foo@bar.com")
         main_user_related_to_passwordless = mommy.save_one(MainUser, email="another@bar.com")
-        p_user_on_db = mommy.save_one(PasswordlessUser, pswdless_id="654321")
+        p_user_on_db = mommy.save_one(PasswordlessUser, external_id="654321")
         ExternalToMainUser(origin=p_user_on_db.key, destination=main_user_related_to_passwordless.key).put()
 
         main_user = facade.login_passwordless('0123', response,
@@ -158,7 +158,7 @@ class LoginTests(GAETestCase):
         return app, fetch_cmd_obj, Mock()
 
     def assert_base_execution(self, app, fetch_cmd_obj, fetch_command_cls, main_user, p_user, write_cookie, response):
-        self.assertEqual('654321', p_user.pswdless_id)
+        self.assertEqual('654321', p_user.external_id)
         self.assertEqual(main_user, SingleDestinationSearh(ExternalToMainUser, p_user).execute().result)
         fetch_command_cls.assert_called_once_with('https://pswdless.appspot.com/rest/detail',
                                                   {'ticket': '0123', 'app_id': app.app_id, 'token': app.token},

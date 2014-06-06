@@ -73,7 +73,7 @@ class SengLoginEmail(GetApp):
 
 class GetPasswordlessUser(ModelSearchCommand):
     def __init__(self, passwordless_id):
-        super(GetPasswordlessUser, self).__init__(PasswordlessUser.query_by_passworless_id(passwordless_id), 1)
+        super(GetPasswordlessUser, self).__init__(PasswordlessUser.query_by_external_id(passwordless_id), 1)
 
     def do_business(self, stop_on_error=True):
         super(GetPasswordlessUser, self).do_business(stop_on_error)
@@ -104,11 +104,11 @@ class PasswordlessDetailCheck(GetApp):
                 if passwordless_user:
                     main_user = SingleDestinationSearh(ExternalToMainUser, passwordless_user).execute().result
                 elif main_user:
-                    passwordless_user_key = PasswordlessUser(pswdless_id=dct['id']).put()
+                    passwordless_user_key = PasswordlessUser(external_id=dct['id']).put()
                     self._to_commit = ExternalToMainUser(origin=passwordless_user_key, destination=main_user.key)
                 else:
                     main_user = MainUser(name=dct['email'], email=dct['email'])
-                    passwordless_user = PasswordlessUser(pswdless_id=dct['id'])
+                    passwordless_user = PasswordlessUser(external_id=dct['id'])
                     ndb.put_multi([main_user, passwordless_user])
                     self._to_commit = ExternalToMainUser(origin=passwordless_user.key, destination=main_user.key)
                 self.result = main_user

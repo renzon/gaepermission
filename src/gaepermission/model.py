@@ -21,8 +21,17 @@ class MainUser(Node):
 
 # Users from external providers
 
+class ExternalUser(Node):
+    external_id = ndb.StringProperty(required=True)
+
+    @classmethod
+    def query_by_external_id(cls, external_id):
+        return cls.query(cls.external_id == external_id)
+
+
 class ExternalToMainUser(Arc):
     destination = ndb.KeyProperty(MainUser, required=True)
+    origin = ndb.KeyProperty(ExternalUser, required=True)
 
 
 class PendingExternalToMainUser(Node):
@@ -35,31 +44,16 @@ class PendingExternalToMainUser(Node):
     # email = ndb.StringProperty(required=True, indexed=False)
 
 
-class ExternalUser(Node):
-    external_id = ndb.StringProperty(required=True)
-
-    @classmethod
-    def query_by_external_id(cls, external_id):
-        return cls.query(cls.external_id == external_id)
-
-
 class GoogleUser(ExternalUser):
     pass
 
-class PasswordlessUser(Node):
-    pswdless_id = ndb.StringProperty(required=True)  # id on Passwordless
 
-    @classmethod
-    def query_by_passworless_id(cls, id):
-        return cls.query(cls.pswdless_id == id)
+class PasswordlessUser(ExternalUser):
+    pass
 
 
-class FacebookUser(Node):
-    facebook_id = ndb.StringProperty(required=True)  # id on Passwordless
-
-    @classmethod
-    def query_by_facebook_id(cls, id):
-        return cls.query(cls.facebook_id == id)
+class FacebookUser(ExternalUser):
+    pass
 
 
 
