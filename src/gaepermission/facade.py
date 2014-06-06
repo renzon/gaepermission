@@ -4,7 +4,7 @@ from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import inspector
-from gaepermission.commands import FakeCommand, UpdateUserGroups
+from gaepermission.base_commands import FakeCommand, UpdateUserGroups
 from gaepermission.facebook.commands import GetFacebookApp, SaveOrUpdateFacebookApp, LogFacebookUserIn, FetchFacebook
 from gaepermission.google.commands import GoogleLogin
 from gaepermission.model import MainUser

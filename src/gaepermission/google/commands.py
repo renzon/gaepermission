@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from google.appengine.ext import ndb
 
-from gaepermission.commands import FindMainUserFromExternalUserId, CheckMainUserEmailConflict, log_main_user_in
+from gaepermission.base_commands import FindMainUserFromExternalUserId, CheckMainUserEmailConflict, log_main_user_in
 from gaepermission.model import GoogleUser, ExternalToMainUser, MainUser, PendingExternalToMainUser
 
 

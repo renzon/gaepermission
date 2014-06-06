@@ -5,7 +5,7 @@ from google.appengine.api import memcache
 from base import GAETestCase
 from gaegraph.business_base import SingleDestinationSearh
 from gaepermission import facade
-from gaepermission.commands import GetMainUserByEmail
+from gaepermission.base_commands import GetMainUserByEmail
 from gaepermission.model import PasswordlessUser, MainUser, ExternalToMainUser
 from gaepermission.passwordless.commands import GetApp
 from gaepermission.passwordless.model import PasswordlessApp
