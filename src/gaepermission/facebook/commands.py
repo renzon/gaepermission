@@ -62,11 +62,11 @@ class FetchFacebook(UrlFetchCommand):
 class LogFacebookUserIn(Command):
     def __init__(self, token, response, user_cookie_name):
         super(LogFacebookUserIn, self).__init__()
-        self._fetch_facebook=FetchFacebook(token)
-        self._login_cmd=None
+        self._fetch_facebook = FetchFacebook(token)
+        self._login_cmd = None
         self.user_cookie_name = user_cookie_name
         self.response = response
-        self.pending_link=None
+        self.pending_link = None
         self.external_user = None
         self.main_user_from_external = None
         self.main_user_from_email = None
@@ -79,20 +79,20 @@ class LogFacebookUserIn(Command):
         self._fetch_facebook.do_business(stop_on_error)
         self.errors.update(self._fetch_facebook.errors)
         if not self.errors:
-            dct=self._fetch_facebook.result
-            self._login_cmd=Login(FacebookUser,
-                                  dct['id'],
-                                  dct['email'],
-                                  dct['name'],
-                                  self.response,
-                                  self.user_cookie_name)
+            dct = self._fetch_facebook.result
+            self._login_cmd = Login(FacebookUser,
+                                    dct['id'],
+                                    dct['email'],
+                                    dct['name'],
+                                    self.response,
+                                    self.user_cookie_name)
             self._login_cmd.set_up()
             self._login_cmd.do_business()
 
     def commit(self):
         if self._login_cmd:
-            self.result=self._login_cmd.result
-            self.pending_link=self._login_cmd.pending_link
+            self.result = self._login_cmd.result
+            self.pending_link = self._login_cmd.pending_link
             self.external_user = self._login_cmd.external_user
             self.main_user_from_external = self._login_cmd.main_user_from_external
             self.main_user_from_email = self._login_cmd.main_user_from_email
