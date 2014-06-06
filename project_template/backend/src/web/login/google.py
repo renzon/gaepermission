@@ -4,6 +4,8 @@ from google.appengine.api import users
 from gaecookie.decorator import no_csrf
 from gaepermission import facade
 from gaepermission.decorator import login_not_required
+from tekton import router
+from web.login import pending
 
 
 @login_not_required
@@ -13,6 +15,9 @@ def index(_handler, _resp, _write_tmpl):
     if user:
         cmd = facade.login_google(user, _resp).execute()
         if cmd.pending_link:
+            pending_path = router.to_path(pending.index, cmd.pending_link.key.id())
+            facade.send_passwordless_login_link(user.email(),
+                                                'https://gaepermission.appspot.com' + pending_path).execute()
             _write_tmpl('login/pending.html', {'provider': 'Google', 'email': user.email()})
             return
     _handler.redirect('/')
