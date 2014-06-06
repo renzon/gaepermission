@@ -21,7 +21,7 @@ class FacebookLoginTests(GAETestCase):
         fetch_mock = self.setup_fetch_mock()
         cmd = facade.login_facebook('', response)
 
-        cmd._fetch_facebook=fetch_mock
+        cmd._fetch_facebook = fetch_mock
         cmd.execute()
 
         self.assertTrue(cmd.result)
@@ -33,7 +33,6 @@ class FacebookLoginTests(GAETestCase):
         self.assertEqual('123', facebook_user.external_id)
         log_main_user_in.assert_called_once_with(user, response, 'userck')
         self.assertIsNone(cmd.pending_link)
-
 
 
     def test_facebook_user_logged_for_the_second_time_with_conflict(self):
@@ -48,7 +47,7 @@ class FacebookLoginTests(GAETestCase):
         fetch_mock = self.setup_fetch_mock()
         cmd = facade.login_facebook('', response)
 
-        cmd._fetch_facebook=fetch_mock
+        cmd._fetch_facebook = fetch_mock
         cmd.execute()
         self.assertFalse(cmd.result)
         self.assertIsNone(cmd.main_user_from_external)
@@ -73,7 +72,7 @@ class FacebookLoginTests(GAETestCase):
         fetch_mock = self.setup_fetch_mock()
         cmd = facade.login_facebook('', response)
 
-        cmd._fetch_facebook=fetch_mock
+        cmd._fetch_facebook = fetch_mock
         cmd.execute()
 
         self.assertTrue(cmd.result)
