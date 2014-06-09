@@ -8,7 +8,7 @@ from web.login import pending
 
 
 @login_not_required
-def index(_handler, _resp, _write_tmpl, token):
+def index(_handler, _resp, _write_tmpl, token, ret_path='/'):
     cmd = facade.login_facebook(token, _resp)
     cmd.execute()
     if cmd.pending_link:
@@ -18,7 +18,7 @@ def index(_handler, _resp, _write_tmpl, token):
                                             'https://gaepermission.appspot.com' + pending_path).execute()
         _write_tmpl('login/pending.html', {'provider': 'Facebook', 'email': user_email})
         return
-    _handler.redirect('/')
+    _handler.redirect(ret_path)
 
 
 @no_csrf

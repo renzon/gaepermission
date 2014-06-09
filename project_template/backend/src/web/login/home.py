@@ -11,11 +11,11 @@ from web.login.passwordless import send_email
 
 @login_not_required
 @no_csrf
-def index(_write_tmpl):
-    g_path = router.to_path(google.index)
+def index(_write_tmpl,ret_path='/'):
+    g_path = router.to_path(google.index,ret_path=ret_path)
     dct = {'login_google_path': users.create_login_url(g_path),
-           'login_passwordless_path': router.to_path(send_email),
-           'login_facebook_path': router.to_path(facebook.index),
+           'login_passwordless_path': router.to_path(send_email,ret_path=ret_path),
+           'login_facebook_path': router.to_path(facebook.index,ret_path=ret_path),
            'faceapp': facade.get_facebook_app_data().execute().result}
     _write_tmpl('login/home.html',
                 dct)

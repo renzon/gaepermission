@@ -10,7 +10,7 @@ from web.login import pending
 
 @login_not_required
 @no_csrf
-def index(_handler, _resp, _write_tmpl):
+def index(_handler, _resp, _write_tmpl, ret_path='/'):
     user = users.get_current_user()
     if user:
         cmd = facade.login_google(user, _resp).execute()
@@ -20,4 +20,4 @@ def index(_handler, _resp, _write_tmpl):
                                                 'https://gaepermission.appspot.com' + pending_path).execute()
             _write_tmpl('login/pending.html', {'provider': 'Google', 'email': user.email()})
             return
-    _handler.redirect('/')
+    _handler.redirect(ret_path)

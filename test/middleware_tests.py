@@ -14,9 +14,11 @@ class LoggedUserTests(GAETestCase):
         cmd_mock.result = None
         facade.logged_user = Mock(return_value=cmd_mock)
         dependency = {}
-        middleware.LoggedUserMiddleware(Mock(), dependency, Mock()).set_up()
-        self.assertEqual({'_login_path': '/login',
-                          '_logout_path': '/logout',
+        handler = Mock()
+        handler.request.path_qs='/foo?param1=1&param2=2'
+        middleware.LoggedUserMiddleware(handler, dependency, Mock()).set_up()
+        self.assertEqual({'_login_path': '/login?ret_path=%2Ffoo%3Fparam1%3D1%26param2%3D2',
+                          '_logout_path': None,
                           '_logged_user': None}, dependency)
 
     @patch('gaepermission.middleware.facade', )
@@ -29,6 +31,6 @@ class LoggedUserTests(GAETestCase):
         facade.logged_user = Mock(return_value=cmd_mock)
         dependency = {}
         middleware.LoggedUserMiddleware(Mock(), dependency, Mock()).set_up()
-        self.assertEqual({'_login_path': '/login',
+        self.assertEqual({'_login_path': None,
                           '_logout_path': '/logout',
                           '_logged_user': user}, dependency)
