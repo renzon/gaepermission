@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from config.tmpl_middleware import TemplateResponse
 from gaecookie.decorator import no_csrf
 from gaepermission import facade
 from gaepermission.decorator import permissions
 from tekton import router
+from tekton.gae.middleware.json_middleware import JsonResponse
 
 
 @permissions('ADMIN')
 @no_csrf
-def index(_write_tmpl):
+def index():
     dct = {'list_users_path': router.to_path(list_users)}
-    _write_tmpl('/permission/admin.html', dct)
+    return TemplateResponse(dct)
 
 
 @permissions('ADMIN')
-def list_users(_json, email_prefix='', cursor=None):
+def list_users( email_prefix='', cursor=None):
     cmd = facade.find_users_by_email_starting_with(email_prefix, cursor)
     users = cmd.execute().result
 
@@ -26,7 +28,7 @@ def list_users(_json, email_prefix='', cursor=None):
     users = [to_dict(u) for u in users]
     cursor_str = cmd.cursor.urlsafe() if cmd.cursor else ''
     next_page = router.to_path(list_users, email_prefix=email_prefix, cursor=cursor_str)
-    _json({'users': users, 'next_page': next_page, 'more': cmd.more})
+    return JsonResponse({'users': users, 'next_page': next_page, 'more': cmd.more})
 
 
 @permissions('ADMIN')
