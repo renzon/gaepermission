@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import json
 from google.appengine.api import memcache
 from base import GAETestCase
+from gaebusiness.business import CommandExecutionException
 from gaegraph.business_base import SingleDestinationSearh
 from gaepermission import facade
 from gaepermission.base_commands import GetMainUserByEmail
@@ -53,7 +54,8 @@ class SendPasswordlessLoginLinkTests(GAETestCase):
     @patch('gaepermission.passwordless.commands.UrlFetchCommand')
     def test_no_app_data(self, fetch_command_cls):
         cmd = facade.send_passwordless_login_link('foo@gmail.com', 'http://www.yoursite/passworless/login',
-                                                  'pt_BR').execute()
+                                                  'pt_BR')
+        self.assertRaises(CommandExecutionException, cmd)
         self.assertDictEqual({'app_data': 'Must save Passwordless App Credentials before login calls'}, cmd.errors)
         self.assertFalse(fetch_command_cls.called)
 

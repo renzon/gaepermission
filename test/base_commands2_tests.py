@@ -35,9 +35,8 @@ class LoginCheckingEmailTests(GAETestCase):
     def test_not_existing_pending_id(self, LoginClassMock):
         external_user, main_user, pending_key = self.setup_call_stat(LoginClassMock)
 
-        cmd = facade.login_checking_email('not existing', 'ticket', 'response').execute()
+        self.assertRaises(ValueError,facade.login_checking_email,'not existing', 'ticket', 'response')
 
-        self.assertFalse(cmd.checked)
         self.assertIsNone(SingleDestinationSearh(ExternalToMainUser, external_user).execute().result)
 
 
