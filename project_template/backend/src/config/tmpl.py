@@ -11,7 +11,6 @@ _jinja_environment = jinja2.Environment(
     trim_blocks=True,
     autoescape=True)
 
-
 def render(template_name, values={}):
     template = _jinja_environment.get_template(template_name)
     return template.render(values)
