@@ -4,7 +4,7 @@ from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import inspector
-from gaepermission.base_commands import FakeCommand, UpdateUserGroups
+from gaepermission.base_commands import FakeCommand, UpdateUserGroups, GetMainUserByEmail
 from gaepermission.base_commands2 import LoginCheckingEmail
 from gaepermission.facebook.commands import GetFacebookApp, SaveOrUpdateFacebookApp, LogFacebookUserIn, FetchFacebook
 from gaepermission.google.commands import GoogleLogin
@@ -13,6 +13,14 @@ from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp, SengLog
 from tekton import router
 
 USER_COOKIE_NAME = 'userck'
+
+def get_user_by_email(email):
+    """
+    Returns a command that find MainUser by her email address
+    :param email: email to use in search
+    :return: Command that look for user on DB
+    """
+    return GetMainUserByEmail(email)
 
 
 def web_path_security_info():
