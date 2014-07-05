@@ -4,7 +4,7 @@ from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import inspector
-from gaepermission.base_commands import FakeCommand, UpdateUserGroups, GetMainUserByEmail
+from gaepermission.base_commands import FakeCommand, UpdateUserGroups, GetMainUserByEmail, SaveUserCmd
 from gaepermission.base_commands2 import LoginCheckingEmail
 from gaepermission.facebook.commands import GetFacebookApp, SaveOrUpdateFacebookApp, LogFacebookUserIn, FetchFacebook
 from gaepermission.google.commands import GoogleLogin
@@ -13,6 +13,22 @@ from gaepermission.passwordless.commands import SaveOrUpdateApp, GetApp, SengLog
 from tekton import router
 
 USER_COOKIE_NAME = 'userck'
+
+
+def save_user_cmd(email, name=None, groups=None):
+    """
+    Command to save a user
+    :param email: user email
+    :param name: user name
+    :param groups: user permission groups
+    :return: A command that validate date and save the user
+    """
+    if name is None:
+        name = email
+    if groups is None:
+        groups = []
+    return SaveUserCmd(name=name, email=email, groups=groups)
+
 
 def get_user_by_email(email):
     """
@@ -68,7 +84,8 @@ def login_passwordless(ticket, response, detail_url='https://pswdless.appspot.co
     """
     return Login(ticket, response, USER_COOKIE_NAME, detail_url)
 
-def login_checking_email(pending_id,ticket, response, detail_url='https://pswdless.appspot.com/rest/detail'):
+
+def login_checking_email(pending_id, ticket, response, detail_url='https://pswdless.appspot.com/rest/detail'):
     """
     Log user in using Passwordless service
     :param pending_id: PendingExternalToMainUser's id
@@ -77,7 +94,7 @@ def login_checking_email(pending_id,ticket, response, detail_url='https://pswdle
     :param detail_url: url to check ticket and user data
     :return: a Command that log user in when executed
     """
-    return LoginCheckingEmail(pending_id,ticket, response, USER_COOKIE_NAME, detail_url)
+    return LoginCheckingEmail(pending_id, ticket, response, USER_COOKIE_NAME, detail_url)
 
 
 def update_user_groups(user_id, groups):

@@ -4,6 +4,7 @@ from base import GAETestCase
 from gaepermission import middleware
 from gaepermission.model import MainUser
 from mock import Mock, patch
+from mommygae import mommy
 
 
 class LoggedUserTests(GAETestCase):
@@ -23,7 +24,7 @@ class LoggedUserTests(GAETestCase):
 
     @patch('gaepermission.middleware.facade', )
     def test_logged_user(self, facade):
-        user = MainUser()
+        user = mommy.save_one(MainUser)
         user.put()
         cmd_mock = Mock()
         cmd_mock.execute = Mock(return_value=cmd_mock)

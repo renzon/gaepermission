@@ -2,8 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 from google.appengine.ext import ndb
 from gaebusiness.business import Command, CommandList
-from gaebusiness.gaeutil import ModelSearchCommand
+from gaebusiness.gaeutil import ModelSearchCommand, SaveCommand
 from gaecookie import facade
+from gaeforms.ndb.form import ModelForm
 from gaegraph.business_base import NodeSearch, SingleDestinationSearh
 from gaepermission.model import MainUser, ExternalToMainUser, PendingExternalToMainUser
 
@@ -28,6 +29,18 @@ class GetMainUserByEmail(ModelSearchCommand):
     def do_business(self, stop_on_error=True):
         super(GetMainUserByEmail, self).do_business(stop_on_error)
         self.result = self.result[0] if self.result else None
+
+
+class MainUserForm(ModelForm):
+    _model_class = MainUser
+    _include = [MainUser.email, MainUser.name, MainUser.groups]
+
+
+class SaveUserCmd(SaveCommand):
+    _model_form_class = MainUserForm
+
+    def __init__(self, **form_parameters):
+        super(SaveUserCmd, self).__init__(**form_parameters)
 
 
 class UpdateUserGroups(NodeSearch):
@@ -80,7 +93,7 @@ class CheckMainUserEmailConflict(CommandList):
 
 
 class Login(CheckMainUserEmailConflict):
-    def __init__(self, external_user_class, external_id, email, user_name, response,user_cookie):
+    def __init__(self, external_user_class, external_id, email, user_name, response, user_cookie):
         super(Login, self).__init__(external_user_class, external_id, email)
         self.user_name = user_name
         self.user_cookie = user_cookie

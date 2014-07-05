@@ -1,8 +1,8 @@
+import sys
+from distutils.util import convert_path
+
 import codecs
 import os
-import sys
-
-from distutils.util import convert_path
 from fnmatch import fnmatchcase
 from setuptools import setup, find_packages
 
@@ -133,4 +133,12 @@ setup(
         "Framework :: Paste",
     ],
     zip_safe=False,
+    install_requires=[
+        'gaecookie==0.6',
+        'gaebusiness==3.0',
+        'gaegraph==2.3',
+        'gaeforms==0.3',
+        'pytz>=2014.4',
+        'Babel==1.3'
+    ]
 )

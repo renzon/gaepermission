@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from google.appengine.ext import ndb
+from gaeforms.ndb.property import Email
 from gaegraph.model import Node, Arc
 
 
 class MainUser(Node):
-    name = ndb.StringProperty()
-    email = ndb.StringProperty()
+    name = ndb.StringProperty(required=True)
+    email = Email(required=True)
     groups = ndb.StringProperty(repeated=True)
 
     @classmethod
