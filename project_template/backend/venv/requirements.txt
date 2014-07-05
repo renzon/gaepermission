@@ -1,6 +1,0 @@
-gaebusiness==3.0
-gaegraph==2.3
-tekton==3.1.1
-gaecookie==0.6
-gaepermission==0.2
-

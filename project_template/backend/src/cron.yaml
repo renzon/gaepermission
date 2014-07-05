@@ -1,4 +1,0 @@
-cron:
-- description: application secret renew
-  url: /task/renew
-  schedule: every sunday 05:00
