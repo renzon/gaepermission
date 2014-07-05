@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from google.appengine.ext import ndb
-from gaebusiness.business import Command, CommandList
+from gaebusiness.business import Command, CommandParallel
 from gaebusiness.gaeutil import ModelSearchCommand, SaveCommand
 from gaecookie import facade
 from gaeforms.ndb.form import ModelForm
@@ -72,10 +72,11 @@ class FindMainUserFromExternalUserId(ModelSearchCommand):
             self.result = None
 
 
-class CheckMainUserEmailConflict(CommandList):
+class CheckMainUserEmailConflict(CommandParallel):
     def __init__(self, external_user_class, external_id, email):
-        super(CheckMainUserEmailConflict, self).__init__(
-            [GetMainUserByEmail(email), FindMainUserFromExternalUserId(external_user_class, external_id)])
+        super(CheckMainUserEmailConflict, self).__init__(GetMainUserByEmail(email),
+                                                         FindMainUserFromExternalUserId(external_user_class,
+                                                                                        external_id))
         self.external_user = None
         self.main_user_from_external = None
         self.main_user_from_email = None

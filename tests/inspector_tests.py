@@ -7,11 +7,8 @@ from tekton import router
 
 
 class InspectorTests(unittest.TestCase):
-    def setUp(self):
-        router.package_base = 'web_stub'
-
     def test_web_paths_generator(self):
-        generator = inspector.web_paths('web_stub')
+        generator = inspector.web_paths('web')
         expected_paths = ['/pack_stub/stub/adm',
                           '/pack_stub/stub/adm_or_manager',
                           '/pack_stub/stub/manager',
@@ -21,7 +18,7 @@ class InspectorTests(unittest.TestCase):
         self.assertListEqual(expected_paths, [t for t in generator])
 
     def test_web_paths_security_info(self):
-        path_infos = inspector.web_paths_security_info('web_stub')
+        path_infos = [(t.path, t.groups, t.csrf) for t in inspector.web_paths_security_info('web')]
         expected_paths = ['/pack_stub/stub/adm',
                           '/pack_stub/stub/adm_or_manager',
                           '/pack_stub/stub/manager',
@@ -33,11 +30,8 @@ class InspectorTests(unittest.TestCase):
 
         expected_csrf = [True, True, True, True, False, False]
 
-        for exp_path_info, exp_path, exp_groups, exp_csrf in izip(path_infos, expected_paths, expected_groups,
-                                                                  expected_csrf):
-            self.assertEqual(exp_path, exp_path_info.path)
-            self.assertEqual(exp_groups, exp_path_info.groups)
-            self.assertEqual(exp_csrf, exp_path_info.csrf)
+        expected_path_infos = zip(expected_paths, expected_groups, expected_csrf)
+        expected_path_infos.sort(key=lambda e: e[0])
 
-    def tearDown(self):
-        router.package_base = 'web_stub'
+        path_infos.sort(key=lambda e: e[0])
+        self.assertListEqual(expected_path_infos, path_infos)

@@ -1,7 +1,7 @@
-gaebusiness==3.0
+gaebusiness==4.0
 gaegraph==2.3
 tekton==3.1.1
-gaecookie==0.6
+gaecookie==0.7
 gaeforms==0.3
 pytz==2014.4
 Babel==1.3

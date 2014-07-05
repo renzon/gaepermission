@@ -4,6 +4,7 @@ import json
 
 from google.appengine.api import memcache
 from google.appengine.ext import ndb
+from gaebusiness.business import CommandParallel
 
 from gaebusiness.gaeutil import ModelSearchCommand, UrlFetchCommand
 from gaecookie import facade
@@ -98,9 +99,9 @@ class PasswordlessDetailCheck(GetApp):
             self.errors.update(fetch_cmd.errors)
             if not self.errors:
                 dct = json.loads(fetch_cmd.result.content)
-                cmd_list = GetMainUserByEmail(dct['email']) + GetPasswordlessUser(dct['id'])
-                cmd_list.execute()
-                main_user, passwordless_user = cmd_list[0].result, cmd_list[1].result
+                cmd_parallel = CommandParallel(GetMainUserByEmail(dct['email']) , GetPasswordlessUser(dct['id']))
+                cmd_parallel.execute()
+                main_user, passwordless_user = cmd_parallel[0].result, cmd_parallel[1].result
                 if passwordless_user:
                     main_user = SingleDestinationSearh(ExternalToMainUser, passwordless_user).execute().result
                 elif main_user:

@@ -2,10 +2,10 @@
 
 
 from __future__ import absolute_import, unicode_literals
-from gaebusiness.business import CommandList
 
 
 # This class should be on base_commands, but it would cause circular dependency
+from gaebusiness.business import CommandParallel
 from gaegraph.business_base import NodeSearch, SingleDestinationSearh
 from gaepermission.model import ExternalToMainUser
 from gaepermission.passwordless.commands import PasswordlessDetailCheck, Login
@@ -25,11 +25,10 @@ def _should_create_link(main_user, pending_model):
         pending_model)
 
 
-class LoginCheckingEmail(CommandList):
+class LoginCheckingEmail(CommandParallel):
     def __init__(self, pending_id, ticket, response, user_cookie_name, detail_url):
-        cmds = [NodeSearch(pending_id),
-                Login(ticket, response, user_cookie_name, detail_url)]
-        super(LoginCheckingEmail, self).__init__(cmds)
+        super(LoginCheckingEmail, self).__init__(NodeSearch(pending_id),
+                                                 Login(ticket, response, user_cookie_name, detail_url))
         self.checked = False
         self.__to_commit = None
 
