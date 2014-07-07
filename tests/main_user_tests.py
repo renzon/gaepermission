@@ -2,9 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 import webapp2
 from base import GAETestCase
-from gaebusiness.business import CommandExecutionException
+from gaebusiness.business import CommandExecutionException, CommandSequential
 from gaepermission import facade
-from gaepermission.base_commands import SaveUserCmd
+from gaepermission.base_commands import SaveUserCmd, GetMainUserByEmail
 from gaepermission.model import MainUser
 from mock import patch, Mock
 from mommygae import mommy
@@ -55,6 +55,17 @@ class MainUserTests(GAETestCase):
         cmd = facade.save_user_cmd('asas')
         self.assertRaises(CommandExecutionException, cmd)
         self.assertTrue('email' in cmd.errors)
+
+    def test_save_when_previous_command_does_not_find_user(self):
+        cmd = CommandSequential(facade.get_user_by_email('foo@bar.com'), facade.save_user_cmd('foo@bar.com'))
+        user = cmd()
+        self.assertIsNotNone(user)
+        self.assertEqual(user, MainUser.query_email('foo@bar.com').get())
+        self.assertEqual(1, len(MainUser.query().fetch()))
+
+    def test_save_when_previous_command_does_find_user(self):
+        facade.save_user_cmd('foo@bar.com')()  # save user before executing
+        self.test_save_when_previous_command_does_not_find_user()
 
     def test_succes(self):
         saved_user = facade.save_user_cmd('foo@bar.com', 'foo', groups=['ADMIN'])()

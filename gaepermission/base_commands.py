@@ -39,8 +39,15 @@ class MainUserForm(ModelForm):
 class SaveUserCmd(SaveCommand):
     _model_form_class = MainUserForm
 
+    def handle_previous(self, command):
+        self.result = command.result
+
     def __init__(self, **form_parameters):
         super(SaveUserCmd, self).__init__(**form_parameters)
+
+    def do_business(self):
+        if self.result is None:
+            super(SaveUserCmd, self).do_business()
 
 
 class UpdateUserGroups(NodeSearch):
@@ -82,8 +89,8 @@ class CheckMainUserEmailConflict(CommandParallel):
         self.main_user_from_email = None
 
 
-    def do_business(self, stop_on_error=True):
-        super(CheckMainUserEmailConflict, self).do_business(stop_on_error)
+    def do_business(self):
+        super(CheckMainUserEmailConflict, self).do_business()
         self.result = True
         self.external_user = self[1].external_user
         self.main_user_from_external = self[1].result
@@ -106,8 +113,8 @@ class Login(CheckMainUserEmailConflict):
         self.email = email
 
 
-    def do_business(self, stop_on_error=True):
-        super(Login, self).do_business(stop_on_error)
+    def do_business(self):
+        super(Login, self).do_business()
 
         # if no conflict
         if self.result:

@@ -33,8 +33,8 @@ class LoginCheckingEmail(CommandParallel):
         self.__to_commit = None
 
 
-    def do_business(self, stop_on_error=True):
-        super(LoginCheckingEmail, self).do_business(stop_on_error)
+    def do_business(self):
+        super(LoginCheckingEmail, self).do_business()
         pending_model = self[0].result
         main_user = self[1].result
         if _should_create_link(main_user, pending_model):
