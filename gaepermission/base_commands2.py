@@ -6,13 +6,13 @@ from __future__ import absolute_import, unicode_literals
 
 # This class should be on base_commands, but it would cause circular dependency
 from gaebusiness.business import CommandParallel
-from gaegraph.business_base import NodeSearch, SingleDestinationSearh
+from gaegraph.business_base import NodeSearch, SingleDestinationSearch
 from gaepermission.model import ExternalToMainUser
-from gaepermission.passwordless.commands import PasswordlessDetailCheck, Login
+from gaepermission.passwordless.commands import  Login
 
 
 def _is_there_a_link_already(pending_model):
-    return SingleDestinationSearh(ExternalToMainUser, pending_model.external_user).execute().result
+    return SingleDestinationSearch(ExternalToMainUser, pending_model.external_user).execute().result
 
 
 def _is_pending_user_same_as_loging_in(main_user, pending_model):

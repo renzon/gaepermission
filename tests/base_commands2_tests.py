@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from base import GAETestCase
-from gaegraph.business_base import SingleDestinationSearh
+from gaegraph.business_base import SingleDestinationSearch
 from gaepermission import facade
 from gaepermission.model import MainUser, GoogleUser, PendingExternalToMainUser, ExternalToMainUser
 from gaepermission.passwordless.commands import Login
@@ -29,7 +29,7 @@ class LoginCheckingEmailTests(GAETestCase):
         cmd = facade.login_checking_email(str(pending_key.id()), 'ticket', 'response').execute()
 
         self.assertTrue(cmd.checked)
-        self.assertEqual(main_user, SingleDestinationSearh(ExternalToMainUser, external_user).execute().result)
+        self.assertEqual(main_user, SingleDestinationSearch(ExternalToMainUser, external_user).execute().result)
 
     @patch('gaepermission.base_commands2.Login')
     def test_not_existing_pending_id(self, LoginClassMock):
@@ -37,7 +37,7 @@ class LoginCheckingEmailTests(GAETestCase):
 
         self.assertRaises(ValueError,facade.login_checking_email,'not existing', 'ticket', 'response')
 
-        self.assertIsNone(SingleDestinationSearh(ExternalToMainUser, external_user).execute().result)
+        self.assertIsNone(SingleDestinationSearch(ExternalToMainUser, external_user).execute().result)
 
 
     @patch('gaepermission.base_commands2.Login')

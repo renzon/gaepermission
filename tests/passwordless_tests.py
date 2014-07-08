@@ -4,7 +4,7 @@ import json
 from google.appengine.api import memcache
 from base import GAETestCase
 from gaebusiness.business import CommandExecutionException
-from gaegraph.business_base import SingleDestinationSearh
+from gaegraph.business_base import SingleDestinationSearch
 from gaepermission import facade
 from gaepermission.base_commands import GetMainUserByEmail
 from gaepermission.model import PasswordlessUser, MainUser, ExternalToMainUser
@@ -161,7 +161,7 @@ class LoginTests(GAETestCase):
 
     def assert_base_execution(self, app, fetch_cmd_obj, fetch_command_cls, main_user, p_user, write_cookie, response):
         self.assertEqual('654321', p_user.external_id)
-        self.assertEqual(main_user, SingleDestinationSearh(ExternalToMainUser, p_user).execute().result)
+        self.assertEqual(main_user, SingleDestinationSearch(ExternalToMainUser, p_user).execute().result)
         fetch_command_cls.assert_called_once_with('https://pswdless.appspot.com/rest/detail',
                                                   {'ticket': '0123', 'app_id': app.app_id, 'token': app.token},
                                                   'POST')

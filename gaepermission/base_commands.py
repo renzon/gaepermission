@@ -5,7 +5,7 @@ from gaebusiness.business import Command, CommandParallel
 from gaebusiness.gaeutil import ModelSearchCommand, SaveCommand
 from gaecookie import facade
 from gaeforms.ndb.form import ModelForm
-from gaegraph.business_base import NodeSearch, SingleDestinationSearh
+from gaegraph.business_base import NodeSearch, SingleDestinationSearch
 from gaepermission.model import MainUser, ExternalToMainUser, PendingExternalToMainUser
 
 
@@ -73,7 +73,7 @@ class FindMainUserFromExternalUserId(ModelSearchCommand):
         super(FindMainUserFromExternalUserId, self).do_business(stop_on_error)
         external_user = self.result[0] if self.result else None
         if external_user:
-            self.result = SingleDestinationSearh(ExternalToMainUser, external_user.key).execute().result
+            self.result = SingleDestinationSearch(ExternalToMainUser, external_user.key).execute().result
             self.external_user = external_user
         else:
             self.result = None

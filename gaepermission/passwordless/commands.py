@@ -8,7 +8,7 @@ from gaebusiness.business import CommandParallel
 
 from gaebusiness.gaeutil import ModelSearchCommand, UrlFetchCommand
 from gaecookie import facade
-from gaegraph.business_base import SingleDestinationSearh
+from gaegraph.business_base import SingleDestinationSearch
 from gaepermission.base_commands import GetMainUserByEmail
 from gaepermission.model import MainUser, ExternalToMainUser, PasswordlessUser
 from gaepermission.passwordless.model import PasswordlessApp
@@ -103,7 +103,7 @@ class PasswordlessDetailCheck(GetApp):
                 cmd_parallel.execute()
                 main_user, passwordless_user = cmd_parallel[0].result, cmd_parallel[1].result
                 if passwordless_user:
-                    main_user = SingleDestinationSearh(ExternalToMainUser, passwordless_user).execute().result
+                    main_user = SingleDestinationSearch(ExternalToMainUser, passwordless_user).execute().result
                 elif main_user:
                     passwordless_user_key = PasswordlessUser(external_id=dct['id']).put()
                     self._to_commit = ExternalToMainUser(origin=passwordless_user_key, destination=main_user.key)
