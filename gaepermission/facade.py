@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from gaebusiness.business import Command
 from gaebusiness.gaeutil import ModelSearchCommand
 from gaecookie import facade as cookie_facade
 from gaegraph.business_base import NodeSearch
 from gaepermission import inspector
-from gaepermission.base_commands import FakeCommand, UpdateUserGroups, GetMainUserByEmail, SaveUserCmd
+from gaepermission.base_commands import UpdateUserGroups, GetMainUserByEmail, SaveUserCmd
 from gaepermission.base_commands2 import LoginCheckingEmail
 from gaepermission.facebook.commands import GetFacebookApp, SaveOrUpdateFacebookApp, LogFacebookUserIn, FetchFacebook
 from gaepermission.google.commands import GoogleLogin
@@ -60,7 +61,7 @@ def logged_user(request):
     """
     dct = cookie_facade.retrive_cookie_data(request, USER_COOKIE_NAME).execute().result
     if dct is None:
-        return FakeCommand()
+        return Command()
     return NodeSearch(dct['id'])
 
 

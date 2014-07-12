@@ -18,8 +18,8 @@ class GetApp(ModelSearchCommand):
     def __init__(self):
         super(GetApp, self).__init__(PasswordlessApp.query(), 1)
 
-    def do_business(self, stop_on_error=True):
-        super(GetApp, self).do_business(stop_on_error)
+    def do_business(self):
+        super(GetApp, self).do_business()
         if self.result:
             self.result = self.result[0]
         else:
@@ -32,8 +32,8 @@ class SaveOrUpdateApp(GetApp):
         self.token = token
         self.id = id
 
-    def do_business(self, stop_on_error=True):
-        super(SaveOrUpdateApp, self).do_business(stop_on_error)
+    def do_business(self):
+        super(SaveOrUpdateApp, self).do_business()
         if not self.result:
             self.result = PasswordlessApp()
         else:
@@ -56,8 +56,8 @@ class SengLoginEmail(GetApp):
         self.lang = lang
 
 
-    def do_business(self, stop_on_error=True):
-        super(SengLoginEmail, self).do_business(stop_on_error)
+    def do_business(self):
+        super(SengLoginEmail, self).do_business()
         app = self.result
         if app:
             fetch_command = UrlFetchCommand(self.url_passwordless_login,
@@ -76,8 +76,8 @@ class GetPasswordlessUser(ModelSearchCommand):
     def __init__(self, passwordless_id):
         super(GetPasswordlessUser, self).__init__(PasswordlessUser.query_by_external_id(passwordless_id), 1)
 
-    def do_business(self, stop_on_error=True):
-        super(GetPasswordlessUser, self).do_business(stop_on_error)
+    def do_business(self):
+        super(GetPasswordlessUser, self).do_business()
         self.result = self.result[0] if self.result else None
 
 
@@ -88,8 +88,8 @@ class PasswordlessDetailCheck(GetApp):
         self.ticket = ticket
         self._to_commit = None
 
-    def do_business(self, stop_on_error=True):
-        super(PasswordlessDetailCheck, self).do_business(stop_on_error)
+    def do_business(self):
+        super(PasswordlessDetailCheck, self).do_business()
         if not self.errors:
             app = self.result
             self.result = None
@@ -124,8 +124,8 @@ class Login(PasswordlessDetailCheck):
         self.response = response
         self.user_cookie_name = user_cookie_name
 
-    def do_business(self, stop_on_error=True):
-        super(Login, self).do_business(stop_on_error)
+    def do_business(self):
+        super(Login, self).do_business()
         facade.write_cookie(self.response, self.user_cookie_name, {'id': self.result.key.id()}).execute()
 
 

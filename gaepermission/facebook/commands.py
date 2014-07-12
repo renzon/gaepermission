@@ -17,8 +17,8 @@ class GetFacebookApp(ModelSearchCommand):
     def __init__(self):
         super(GetFacebookApp, self).__init__(FacebookApp.query(), 1)
 
-    def do_business(self, stop_on_error=True):
-        super(GetFacebookApp, self).do_business(stop_on_error)
+    def do_business(self):
+        super(GetFacebookApp, self).do_business()
         if self.result:
             self.result = self.result[0]
         else:
@@ -31,8 +31,8 @@ class SaveOrUpdateFacebookApp(GetFacebookApp):
         self.token = token
         self.id = id
 
-    def do_business(self, stop_on_error=True):
-        super(SaveOrUpdateFacebookApp, self).do_business(stop_on_error)
+    def do_business(self):
+        super(SaveOrUpdateFacebookApp, self).do_business()
         if not self.result:
             self.result = FacebookApp()
         else:
@@ -53,8 +53,8 @@ class FetchFacebook(UrlFetchCommand):
                                              'access_token': token})
         self._to_commit = None
 
-    def do_business(self, stop_on_error=True):
-        super(FetchFacebook, self).do_business(stop_on_error)
+    def do_business(self):
+        super(FetchFacebook, self).do_business()
         if not self.errors:
             self.result = json.loads(self.result.content)
 
@@ -75,8 +75,8 @@ class LogFacebookUserIn(Command):
         self._fetch_facebook.set_up()
 
 
-    def do_business(self, stop_on_error=True):
-        self._fetch_facebook.do_business(stop_on_error)
+    def do_business(self):
+        self._fetch_facebook.do_business()
         self.errors.update(self._fetch_facebook.errors)
         if not self.errors:
             dct = self._fetch_facebook.result

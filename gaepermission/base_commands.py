@@ -9,14 +9,6 @@ from gaegraph.business_base import NodeSearch, SingleDestinationSearch
 from gaepermission.model import MainUser, ExternalToMainUser, PendingExternalToMainUser
 
 
-class FakeCommand(Command):
-    '''
-    This command is used when there is only the need to keep the Command contract
-    '''
-
-    def do_business(self, stop_on_error=True):
-        pass
-
 
 def log_main_user_in(main_user, response, user_cookie):
     facade.write_cookie(response, user_cookie, {'id': main_user.key.id()}).execute()
@@ -26,8 +18,8 @@ class GetMainUserByEmail(ModelSearchCommand):
     def __init__(self, email):
         super(GetMainUserByEmail, self).__init__(MainUser.query_email(email), 1)
 
-    def do_business(self, stop_on_error=True):
-        super(GetMainUserByEmail, self).do_business(stop_on_error)
+    def do_business(self):
+        super(GetMainUserByEmail, self).do_business()
         self.result = self.result[0] if self.result else None
 
 
@@ -55,8 +47,8 @@ class UpdateUserGroups(NodeSearch):
         super(UpdateUserGroups, self).__init__(user_id)
         self.groups = groups
 
-    def do_business(self, stop_on_error=False):
-        super(UpdateUserGroups, self).do_business(stop_on_error)
+    def do_business(self):
+        super(UpdateUserGroups, self).do_business()
         self.result.groups = self.groups
 
     def commit(self):
@@ -69,8 +61,8 @@ class FindMainUserFromExternalUserId(ModelSearchCommand):
               self).__init__(external_user_class.query_by_external_id(external_id), 1)
         self.external_user = None
 
-    def do_business(self, stop_on_error=True):
-        super(FindMainUserFromExternalUserId, self).do_business(stop_on_error)
+    def do_business(self):
+        super(FindMainUserFromExternalUserId, self).do_business()
         external_user = self.result[0] if self.result else None
         if external_user:
             self.result = SingleDestinationSearch(ExternalToMainUser, external_user.key).execute().result
