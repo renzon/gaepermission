@@ -12,7 +12,7 @@ class MainUser(Node):
 
     @classmethod
     def query_email_starts_with(cls, prefix=''):
-        last_str_with_prefix = prefix + unichr(0x110000 - 1)
+        last_str_with_prefix = prefix + unichr(65525) # this is the last unichar supported on windows systems
         return cls.query(cls.email >= prefix, cls.email < last_str_with_prefix).order(cls.email)
 
     @classmethod
