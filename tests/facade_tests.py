@@ -16,3 +16,14 @@ class GetUserByEmailTests(GAETestCase):
         cmd = facade.get_user_by_email('foo@bar.com')
         self.assertIsNone(cmd())
 
+
+class SaveUserTests(GAETestCase):
+    def test_save(self):
+        facade.save_user_cmd('renzo@gmail.com', 'Renzo Nuccitelli', locale='pt_BR', timezone='America/Sao_Paulo')()
+        user = facade.get_user_by_email('renzo@gmail.com')()
+        self.assertEqual('renzo@gmail.com', user.email)
+        self.assertEqual('Renzo Nuccitelli', user.name)
+        self.assertEqual('pt_BR', user.locale)
+        self.assertEqual('America/Sao_Paulo', user.timezone)
+        self.assertListEqual([], user.groups)
+

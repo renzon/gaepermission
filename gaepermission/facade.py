@@ -16,7 +16,7 @@ from tekton import router
 USER_COOKIE_NAME = 'userck'
 
 
-def save_user_cmd(email, name=None, groups=None):
+def save_user_cmd(email, name=None, groups=None, locale='en_US', timezone='US/Eastern'):
     """
     Command to save a user
     :param email: user email
@@ -28,7 +28,7 @@ def save_user_cmd(email, name=None, groups=None):
         name = email
     if groups is None:
         groups = []
-    return SaveUserCmd(name=name, email=email, groups=groups)
+    return SaveUserCmd(name=name, email=email, groups=groups, locale=locale, timezone=timezone)
 
 
 def get_user_by_email(email):

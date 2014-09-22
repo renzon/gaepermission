@@ -11,7 +11,7 @@ from tekton import router
 def _paths_helper(base_path, prefix_path):
     prefix_len = len(prefix_path) + 1
     for dirpath, dirnames, filenames in os.walk(base_path, False):
-        package = dirpath[prefix_len:].replace(r'/', '.').replace(os.path.sep)
+        package = dirpath[prefix_len:].replace(r'/', '.').replace(os.path.sep, '.')  # second replace due windows
         pyfile_names = (f[:-3] for f in filenames if f.endswith('.py') and f != '__init__.py')
         for fname in pyfile_names:
             module_name = '.'.join((package, fname))

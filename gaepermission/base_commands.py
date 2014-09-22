@@ -25,7 +25,7 @@ class GetMainUserByEmail(ModelSearchCommand):
 
 class MainUserForm(ModelForm):
     _model_class = MainUser
-    _include = [MainUser.email, MainUser.name, MainUser.groups]
+    _include = [MainUser.email, MainUser.name, MainUser.groups, MainUser.locale, MainUser.timezone]
 
 
 class SaveUserCmd(SaveCommand):
