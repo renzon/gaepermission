@@ -117,6 +117,20 @@ def find_users_by_email_starting_with(email_prefix=None, cursor=None, page_size=
                               page_size, cursor, cache_begin=None)
 
 
+def find_users_by_email_and_group(email_prefix=None, group=None, cursor=None, page_size=30):
+    """
+    Returns a command that retrieves users by its email_prefix, ordered by email and by Group.
+    If Group is None, only users without any group are going to be searched
+    It returns a max number of users defined by page_size arg. Next result can be retrieved using cursor, in
+    a next call. It is provided in cursor attribute from command.
+    """
+    email_prefix = email_prefix or ''
+
+    return ModelSearchCommand(MainUser.query_email_and_group(email_prefix, group),
+                              page_size, cursor, cache_begin=None)
+
+
+
 def send_passwordless_login_link(email, return_url, lang='en_US', url_login='https://pswdless.appspot.com/rest/login'):
     """
 
@@ -160,6 +174,7 @@ def save_or_update_facebook_app_data(id=None, token=None):
     See https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/v2.0
     """
     return SaveOrUpdateFacebookApp(id, token)
+
 
 
 def login_facebook(token, response):

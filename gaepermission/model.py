@@ -3,6 +3,9 @@ from __future__ import absolute_import, unicode_literals
 from google.appengine.ext import ndb
 from gaeforms.ndb.property import Email
 from gaegraph.model import Node, Arc
+from google.appengine.ext.ndb.model import ComputedProperty
+
+_USER_WITHOUT_GROUP = 'USER_WITHOUT_GROUP'
 
 
 class MainUser(Node):
@@ -11,11 +14,27 @@ class MainUser(Node):
     groups = ndb.StringProperty(repeated=True)
     locale = ndb.StringProperty(indexed=False)
     timezone = ndb.StringProperty(indexed=False)
+    group_flag = ComputedProperty(lambda user: None if user.groups else _USER_WITHOUT_GROUP)
+
+    @classmethod
+    def _calculate_prefix(cls, prefix):
+        last_str_with_prefix = prefix + unichr(65525)  # this is the last unichar supported on windows systems
+        return last_str_with_prefix
 
     @classmethod
     def query_email_starts_with(cls, prefix=''):
-        last_str_with_prefix = prefix + unichr(65525)  # this is the last unichar supported on windows systems
+        last_str_with_prefix = cls._calculate_prefix(prefix)
         return cls.query(cls.email >= prefix, cls.email < last_str_with_prefix).order(cls.email)
+
+
+    @classmethod
+    def query_email_and_group(cls, prefix, group):
+        last_str_with_prefix = cls._calculate_prefix(prefix)
+        if group is None:
+            return cls.query(cls.email >= prefix, cls.email < last_str_with_prefix,
+                             cls.group_flag == _USER_WITHOUT_GROUP).order(cls.email)
+        return cls.query(cls.email >= prefix, cls.email < last_str_with_prefix, cls.groups == group).order(cls.email)
+
 
     @classmethod
     def query_email(cls, email):

@@ -27,3 +27,36 @@ class SaveUserTests(GAETestCase):
         self.assertEqual('America/Sao_Paulo', user.timezone)
         self.assertListEqual([], user.groups)
 
+
+class FindUsersByGroup(GAETestCase):
+    def test_find_user_without_group(self):
+        users = facade.find_users_by_email_and_group()()
+        self.assertListEqual([], users)
+        saved_users = []
+        saved_users.append(facade.save_user_cmd('a@a.com', 'a')())
+        saved_users.append(facade.save_user_cmd('b@b.com', 'b', groups=['G1'])())
+        saved_users.append(facade.save_user_cmd('c@c.com', 'c', groups=['G2'])())
+        saved_users.append(facade.save_user_cmd('c@c.com', 'c', groups=['G1', 'G2'])())
+        users = facade.find_users_by_email_and_group()()
+        self.assertListEqual(saved_users[:1], users)
+        users = facade.find_users_by_email_and_group('a')()
+        self.assertListEqual(saved_users[:1], users, users)
+
+    def test_find_user_with_group(self):
+        users = facade.find_users_by_email_and_group(group='G1')()
+        self.assertListEqual([], users)
+        saved_users = []
+        saved_users.append(facade.save_user_cmd('a@a.com', 'a')())
+        saved_users.append(facade.save_user_cmd('b@b.com', 'b', groups=['G1'])())
+        saved_users.append(facade.save_user_cmd('c@c.com', 'c', groups=['G2'])())
+        saved_users.append(facade.save_user_cmd('d@c.com', 'd', groups=['G1', 'G2'])())
+        users = facade.find_users_by_email_and_group(group='G1')()
+        self.assertListEqual(saved_users[1::2], users)
+        users = facade.find_users_by_email_and_group(group='G2')()
+        self.assertListEqual(saved_users[2:], users)
+        users = facade.find_users_by_email_and_group('b@', group='G2')()
+        self.assertListEqual([], users)
+        users = facade.find_users_by_email_and_group('c@', group='G2')()
+        self.assertListEqual(saved_users[2:3], users)
+
+
