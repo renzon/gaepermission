@@ -25,7 +25,7 @@ class SaveUserTests(GAETestCase):
         self.assertEqual('Renzo Nuccitelli', user.name)
         self.assertEqual('pt_BR', user.locale)
         self.assertEqual('America/Sao_Paulo', user.timezone)
-        self.assertListEqual([], user.groups)
+        self.assertListEqual([''], user.groups)
 
 
 class FindUsersByGroup(GAETestCase):

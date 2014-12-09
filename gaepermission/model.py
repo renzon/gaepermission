@@ -14,7 +14,13 @@ class MainUser(Node):
     groups = ndb.StringProperty(repeated=True)
     locale = ndb.StringProperty(indexed=False)
     timezone = ndb.StringProperty(indexed=False)
-    group_flag = ComputedProperty(lambda user: None if user.groups else _USER_WITHOUT_GROUP)
+
+    def _pre_put_hook(self):
+        if not self.groups:
+            self.groups = ['']
+        else:
+            self.groups = [g for g in self.groups if g]
+
 
     @classmethod
     def _calculate_prefix(cls, prefix):
@@ -31,8 +37,7 @@ class MainUser(Node):
     def query_email_and_group(cls, prefix, group):
         last_str_with_prefix = cls._calculate_prefix(prefix)
         if group is None:
-            return cls.query(cls.email >= prefix, cls.email < last_str_with_prefix,
-                             cls.group_flag == _USER_WITHOUT_GROUP).order(cls.email)
+            group = ''
         return cls.query(cls.email >= prefix, cls.email < last_str_with_prefix, cls.groups == group).order(cls.email)
 
 
