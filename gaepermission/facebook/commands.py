@@ -8,7 +8,8 @@ from gaebusiness.business import Command
 
 from gaebusiness.gaeutil import ModelSearchCommand, UrlFetchCommand
 from gaecookie import facade
-from gaepermission.base_commands import FindMainUserFromExternalUserId, CheckMainUserEmailConflict, Login
+from gaepermission.base_commands import FindMainUserFromExternalUserId, CheckMainUserEmailConflict, Login, \
+    ExternalToMainUser
 from gaepermission.facebook.model import FacebookApp
 from gaepermission.model import FacebookUser, ExternalToMainUser, MainUser
 

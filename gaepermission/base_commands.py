@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from gaegraph.model import Arc
 from google.appengine.ext import ndb
 from gaebusiness.business import Command, CommandParallel
 from gaebusiness.gaeutil import ModelSearchCommand, SaveCommand
 from gaecookie import facade
 from gaeforms.ndb.form import ModelForm
 from gaegraph.business_base import NodeSearch, SingleDestinationSearch
-from gaepermission.model import MainUser, ExternalToMainUser, PendingExternalToMainUser
-
+from gaepermission.model import MainUser, PendingExternalToMainUser, ExternalUser, ExternalToMainUser
 
 
 def log_main_user_in(main_user, response, user_cookie):
     facade.write_cookie(response, user_cookie, {'id': main_user.key.id()}).execute()
+
+
+class MainUserSearch(SingleDestinationSearch):
+    arc_class = ExternalToMainUser
 
 
 class GetMainUserByEmail(ModelSearchCommand):
@@ -65,7 +69,7 @@ class FindMainUserFromExternalUserId(ModelSearchCommand):
         super(FindMainUserFromExternalUserId, self).do_business()
         external_user = self.result[0] if self.result else None
         if external_user:
-            self.result = SingleDestinationSearch(ExternalToMainUser, external_user.key).execute().result
+            self.result = MainUserSearch(external_user.key).execute().result
             self.external_user = external_user
         else:
             self.result = None

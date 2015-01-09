@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 from google.appengine.ext import ndb
 from gaeforms.ndb.property import Email
 from gaegraph.model import Node, Arc
-from google.appengine.ext.ndb.model import ComputedProperty
 
 _USER_WITHOUT_GROUP = 'USER_WITHOUT_GROUP'
 
@@ -56,11 +55,6 @@ class ExternalUser(Node):
         return cls.query(cls.external_id == external_id)
 
 
-class ExternalToMainUser(Arc):
-    destination = ndb.KeyProperty(MainUser, required=True)
-    origin = ndb.KeyProperty(ExternalUser, required=True)
-
-
 class PendingExternalToMainUser(Node):
     """
     Class used to create ExternalToMainUser after email confirmation
@@ -82,6 +76,9 @@ class PasswordlessUser(ExternalUser):
 class FacebookUser(ExternalUser):
     pass
 
+class ExternalToMainUser(Arc):
+    destination = ndb.KeyProperty(MainUser, required=True)
+    origin = ndb.KeyProperty(ExternalUser, required=True)
 
 
 

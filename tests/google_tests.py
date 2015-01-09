@@ -2,8 +2,10 @@
 from __future__ import absolute_import, unicode_literals
 from base import GAETestCase
 from gaegraph.business_base import OriginsSearch
+from facebook_tests import ExternalUserSearch
 from gaepermission import facade
-from gaepermission.model import MainUser, ExternalToMainUser, GoogleUser, PendingExternalToMainUser
+from gaepermission.model import MainUser, GoogleUser, PendingExternalToMainUser
+from gaepermission.base_commands import ExternalToMainUser
 from mock import Mock, patch
 from mommygae import mommy
 
@@ -23,7 +25,7 @@ class GoogleLoginTests(GAETestCase):
         self.assertEqual('foo@gmail.com', user.email)
         self.assertEqual('foo', user.name)
         self.assertEqual(MainUser.query().get(), user)
-        google_user = OriginsSearch(ExternalToMainUser, user).execute().result[0]
+        google_user = ExternalUserSearch(user).execute().result[0]
         self.assertEqual('123', google_user.external_id)
         log_main_user_in.assert_called_once_with(user, response, 'userck')
         self.assertIsNone(cmd.pending_link)

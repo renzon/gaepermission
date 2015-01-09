@@ -134,11 +134,12 @@ setup(
     ],
     zip_safe=False,
     install_requires=[
-        'gaecookie==0.6',
-        'gaebusiness==3.0',
-        'gaegraph==2.3',
-        'gaeforms==0.3',
+        'gaecookie>=0.6',
+        'gaebusiness>=3.0',
+        'gaegraph>=3.5',
+        'gaeforms>=0.3',
         'pytz>=2014.4',
-        'Babel==1.3'
+        'Babel==1.3',
+        'tekton==4.2'
     ]
 )

@@ -3,9 +3,14 @@ from __future__ import absolute_import, unicode_literals
 from base import GAETestCase
 from gaegraph.business_base import OriginsSearch
 from gaepermission import facade
-from gaepermission.model import MainUser, ExternalToMainUser, FacebookUser, PendingExternalToMainUser
+from gaepermission.model import MainUser, FacebookUser, PendingExternalToMainUser
+from gaepermission.base_commands import ExternalToMainUser
 from mock import patch, Mock
 from mommygae import mommy
+
+
+class ExternalUserSearch(OriginsSearch):
+    arc_class = ExternalToMainUser
 
 
 class FacebookLoginTests(GAETestCase):
@@ -29,7 +34,7 @@ class FacebookLoginTests(GAETestCase):
         self.assertEqual('foo@gmail.com', user.email)
         self.assertEqual('foo', user.name)
         self.assertEqual(MainUser.query().get(), user)
-        facebook_user = OriginsSearch(ExternalToMainUser, user).execute().result[0]
+        facebook_user = ExternalUserSearch(user).execute().result[0]
         self.assertEqual('123', facebook_user.external_id)
         log_main_user_in.assert_called_once_with(user, response, 'userck')
         self.assertIsNone(cmd.pending_link)

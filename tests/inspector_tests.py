@@ -6,9 +6,11 @@ from gaepermission import inspector
 from tekton import router
 
 
+
+
 class InspectorTests(unittest.TestCase):
     def test_web_paths_generator(self):
-        generator = inspector.web_paths('web')
+        generator = inspector.web_paths('routes')
         expected_paths = ['/pack_stub/stub/adm',
                           '/pack_stub/stub/adm_or_manager',
                           '/pack_stub/stub/manager',
@@ -18,7 +20,7 @@ class InspectorTests(unittest.TestCase):
         self.assertListEqual(expected_paths, [t for t in generator])
 
     def test_web_paths_security_info(self):
-        path_infos = [(t.path, t.groups, t.csrf) for t in inspector.web_paths_security_info('web')]
+        path_infos = [(t.path, t.groups, t.csrf) for t in inspector.web_paths_security_info('routes')]
         expected_paths = ['/pack_stub/stub/adm',
                           '/pack_stub/stub/adm_or_manager',
                           '/pack_stub/stub/manager',
