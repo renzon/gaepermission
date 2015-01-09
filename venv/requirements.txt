@@ -1,5 +1,5 @@
 gaebusiness==4.5.2
-gaegraph==3.5
+gaegraph==3.6
 tekton==4.2
 gaecookie==0.7
 gaeforms==0.14
