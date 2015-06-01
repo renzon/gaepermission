@@ -136,7 +136,7 @@ def send_passwordless_login_link(email, return_url, lang='en_US', url_login='htt
 
     :param email: The email user sent. 
     :param return_url: The url user will be redirected after clicking login link
-    :param lang: Default en_US
+    :param lang: The language Passwordless must use on email. Available values: en_US and pt_BR. Default: en_US.
     :param return_url: The url to pswdless login API
     :return: command that communicate with passsworless to sent the email
     """
