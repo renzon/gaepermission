@@ -134,9 +134,10 @@ def find_users_by_email_and_group(email_prefix=None, group=None, cursor=None, pa
 def send_passwordless_login_link(email, return_url, lang='en_US', url_login='https://pswdless.appspot.com/rest/login'):
     """
 
-    :param app_id: The Passwordless app's id
-    :param token: The Passwordless app's token
+    :param email: The email user sent. 
     :param return_url: The url user will be redirected after clicking login link
+    :param lang: The language Passwordless must use on email. Available values: en_US and pt_BR. Default: en_US.
+    :param return_url: The url to pswdless login API
     :return: command that communicate with passsworless to sent the email
     """
     return SengLoginEmail(email, return_url, lang, url_login)
