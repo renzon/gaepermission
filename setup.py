@@ -139,7 +139,7 @@ setup(
         'gaegraph>=3.5',
         'gaeforms>=0.3',
         'pytz>=2014.4',
-        'Babel==1.3',
+        'Babel==2.9.1',
         'tekton==4.2'
     ]
 )
